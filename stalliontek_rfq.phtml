@@ -1,0 +1,73 @@
+<?php
+header('X-XSS-Protection: 0');
+?>
+
+<form method="post" action="https://www.stalliontek.com/rfq-handler" name="rfqForm" id="rfqForm" onsubmit="return validateRfqForm()">
+	<div class="row">
+		<div class="col-sm-12">
+			<label for="sender" class="control-label required">Name: <em>*</em></label>			
+			<input type="text" class="input-text" name="sender" >
+		</div>
+	</div>
+	<br>
+	
+	<div class="row">
+		<div class="col-sm-12">
+			<label for="senderEmail" class="control-label required">Email address: <em>*</em></label>			
+			<input type="email" class="input-text" name="senderEmail" >
+		</div>			
+	</div>
+	<br>
+	
+	<div class="row">
+		<div class="col-sm-12">
+		<label for="phone" class="control-label">Telephone: </label>
+		<input type="tel" class="input-text" name="phone" >
+		</div>
+	</div>
+	<br>
+	
+	<div class="row">
+		<div class="col-sm-12">
+		<label for="message" class="control-label">Message:</label>
+		<textarea class="input-text" rows="5" name="message"></textarea>
+		</div>
+	</div>	
+	<br>
+	
+	<input type="hidden" name="myTable" value='<?php echo $_POST["myTable"]; ?>'>
+	
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="pull-right">	  			
+				<input type="submit" name="submit" value="Submit" class="btn btn-info" style="background-color: #bbbdc0;">
+				<input type="reset" value="Reset" class="btn btn-info" style="background-color: #bbbdc0;">
+			</div>	
+		</div>		
+	</div>
+</form>
+
+<script>
+function validateRfqForm() {
+    var x = document.forms["rfqForm"]["sender"].value;
+	var y = document.forms["rfqForm"]["senderEmail"].value;
+
+    if (x == "") {
+        alert("Please enter your name.");
+        return false;
+    }else if (y == "") {
+        alert("Please enter your Email address.");
+        return false;
+    }else if (!ValidateEmail(y)) {
+        alert("You have entered an invalid email address!");
+        return false;
+	}
+}
+
+function ValidateEmail(mail){  
+ if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)){  
+    return true;  
+  }  
+    return false;
+}  
+</script>

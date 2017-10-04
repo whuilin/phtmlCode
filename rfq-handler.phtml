@@ -1,0 +1,41 @@
+<?php
+header('X-XSS-Protection: 0');
+
+if($_POST["submit"]) {
+    $recipient=$_POST["senderEmail"];
+	$recipient2 = "mtaha@stalliontek.com";
+    $subject="Your Stalliontek quote is ready";
+    $sender=$_POST["sender"];
+    $senderEmail=$_POST["senderEmail"];
+	$phone=$_POST["phone"];
+    $message=$_POST["message"];
+	$rfqTable=$_POST['myTable'];
+	
+	$headers = "From: Stallion Technology <mtaha@stalliontek.com>" . "\r\n";
+	$headers .= "Reply-To: " . "$sender <$senderEmail>"  . "\r\n";
+	$headers .= "MIME-Version: 1.0\r\n";
+	$headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+	
+	$mailBody = "<h1>Thank you for shopping at Stalliontek</h1>";
+    $mailBody .="Name: $sender<br>Email: $senderEmail<br>";
+	$mailBody .= "Phone: $phone<br>Message: $message<br>";
+	$mailBody .= "<table style='width:600px; font-family:Verdana,Arial;'>$rfqTable</table>";
+
+    mail($recipient, $subject, $mailBody, $headers);
+	mail($recipient2, $subject, $mailBody, $headers);
+
+    $thankYou="<p>Thank you! You Will see your quote in 30 seconds.</p><p style='font-size:80%;color:red;'>* quote may be sent to junk mail</p>";
+}
+
+?>
+
+    <?=$thankYou ?>
+
+    <table id="rfqTable" style='width:600px; font-family:Verdana,Arial;'><?php echo $rfqTable; ?>
+	<style>
+		@media print {
+			body {-webkit-print-color-adjust: exact;}
+		}
+	</style>
+	</table>
+

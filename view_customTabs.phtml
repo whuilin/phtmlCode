@@ -1,0 +1,1190 @@
+<?php
+    $_helper = $this->helper('catalog/output');
+    $helper_richsnippets = $this->helper('porto/richsnippets');
+    $store = Mage::app()->getStore();
+    $code  = $store->getCode();
+?>
+<?php $_product = $this->getProduct(); ?>
+<?php
+    $product = Mage::getModel('catalog/product')->load($_product->getId());
+    $product_type = $_product->getTypeId();
+    $enabled_richsnippets = ($helper_richsnippets->isEnabled() && $product_type !== "grouped");
+    $price_properties = "";
+    
+    if($enabled_richsnippets){
+        $price_properties = $helper_richsnippets->getPriceProperties($_product);
+    }
+    
+    $enable_addtocart_sticky = Mage::getStoreConfig("porto_settings/product_view/enable_addtocart_sticky",$code);
+    $move_product_tab = Mage::getStoreConfig("porto_settings/product_view/move_product_tab",$code);
+    $sticky_header = "";
+    if(!Mage::getStoreConfig("porto_settings/header/sticky_header", $code))
+        $sticky_header = "no-sticky-header";
+?>
+<script type="text/javascript" src="https://www.stalliontek.com/js/varien/product_options.js"></script>
+
+<script type="text/javascript">
+    var optionsPrice = new Product.OptionsPrice(<?php echo $this->getJsonConfig() ?>);
+</script>
+
+<div id="messages_product_view"><?php echo $this->getMessagesBlock()->getGroupedHtml() ?></div>
+<div class="product-view <?php if($move_product_tab): ?>moved-tab<?php endif;?>" <?php if($enabled_richsnippets): ?><?php echo $helper_richsnippets->getProductItemscope(); ?><?php endif; ?>>
+    <div class="product-essential">
+    
+	
+	
+<?php
+if($enable_addtocart_sticky){
+?>
+        <div class="sticky-product hide <?php echo $sticky_header; ?>">
+            <div class="container">
+<?php
+    $aspect_ratio = Mage::getStoreConfig("porto_settings/product_view/aspect_ratio", $code);
+    $ratio_width = 600;
+    $ratio_height = 600;
+    if(Mage::getStoreConfig("porto_settings/product_view/ratio_width", $code))
+        $ratio_width = Mage::getStoreConfig("porto_settings/product_view/ratio_width", $code);
+    if(!$aspect_ratio){
+        if(Mage::getStoreConfig("porto_settings/product_view/ratio_height", $code))
+            $ratio_height = Mage::getStoreConfig("porto_settings/product_view/ratio_height", $code);
+    }
+    $ratio = $ratio_height / $ratio_width;
+    $ratio_width = 50;
+    $ratio_height = $ratio_width * $ratio;
+?>
+                <div class="sticky-image">
+                    <img src="<?php if($aspect_ratio):?><?php echo $this->helper('catalog/image')->init($_product, 'small_image')->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize(50);?><?php else: ?><?php echo $this->helper('catalog/image')->init($_product, 'small_image')->resize($ratio_width,$ratio_height); ?><?php endif; ?>" alt="<?php echo $this->stripTags($this->getImageLabel($_product, 'small_image'), null, true) ?>"/>
+                </div>
+                <div class="sticky-detail">
+                    <div class="product-name-area">
+                        <h2 class="product-name"><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?></h2>
+                        <?php echo $this->getPriceHtml($_product, false, '_clone') ?>
+                    </div>
+                    <?php 
+                    if (Mage::helper('catalog')->isModuleEnabled('Mage_Review')):
+                    ?>
+                    <?php 
+                        $review_html = $this->getReviewsSummaryHtml($product, 'short');
+                        if($review_html){
+                            echo $review_html;
+                        }else{
+                    ?>
+                        <div class="ratings">
+                            <div class="rating-box">
+                                <div class="rating" style="width:0"></div>
+                            </div>
+                        </div>
+                    <?php                            
+                        }
+                    ?>
+                    <?php else: ?>
+                        <div class="ratings">
+                            <div class="rating-box">
+                                <div class="rating" style="width:0"></div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if($enabled_richsnippets): ?>
+                    <?php if ($this->getReviewsCount()): ?>
+                        <span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+                            <meta itemprop="ratingValue" content="<?php echo $this->getRatingSummary(); ?>"/>
+                            <meta itemprop="reviewCount" content="<?php echo $this->getReviewsCount(); ?>" />
+                            <meta itemprop="bestRating" content="100"/>
+                            <meta itemprop="worstRating" content="0"/>
+                        </span>
+                    <?php endif; ?>
+                    <?php endif; ?>
+					<?php if ($_product->isAvailable()): ?>
+						<p class="availability in-stock"><span>(<?php echo $this->__('In stock') ?>)</span></p>
+					<?php else: ?>
+						<p class="availability out-of-stock"><span>(<?php echo $this->__('Out of stock') ?>)</span></p>
+					<?php endif; ?>
+                </div>
+                <?php if($_product->isSaleable()): ?>
+                <?php $buttonTitle = $this->__('Add to Cart'); ?>
+                    <div class="add-to-cart">
+                        <button type="button" title="<?php echo $buttonTitle ?>" class="button btn-cart" onclick="productAddToCartForm.submit(this)"><span><span><i class="icon-cart"></i><?php echo $buttonTitle ?></span></span></button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+<?php
+}
+?>
+<!-- modified for new design July, 2017 @Huilin Wang-->
+        <div class="row">
+            <div class="product-img-box col-sm-<?php echo Mage::getStoreConfig("porto_settings/product_view/product_image_size", $code); ?> <?php echo Mage::getStoreConfig("porto_settings/product_view/thumbnail_image_type", $code); ?>">
+                <?php echo $this->getChildHtml('media') ?>
+	
+	<div class="row proBadgeRow" style="margin-top:100px;">
+					<div class="col-sm-12">
+						<div class="col-sm-4"><img src="https://www.stalliontek.com/media/lowprice.png" width="100%" alt="price match" class="productBadge"></div>
+						<div class="col-sm-4"><img src="https://www.stalliontek.com/media/shipping200x200.png" width="100%" alt="shipping" class="productBadge"></div>
+						<div class="col-sm-4"><img src="https://www.stalliontek.com/media/warranty2yearSLP.png" width="125%" alt="warranty" class="productBadge"></div>
+					</div>
+					<div class="col-sm-12" style="margin-top:15px;">
+						<div class="col-sm-12" style="background-color:#003c66; color:#ffffff; text-align:center; font-weight:bold;">
+							<div style="padding-top:15px; font-size:18px;">WE SHIP ORDERS OF ALL SIZES</div>
+							<div style="padding-bottom:15px;">CALL US TO LEARN MORE - 1-844-760-5565</div>
+						</div>	
+					</div>					
+	</div>	
+	
+	<div class="product-collateral" id="tabs-left">
+        <div class="product-tabs panel-group product-tab-accordion" id="product_tab_accordion">
+		
+        <div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" href="#tab_description_tabbed">Product Description</a>
+				</h4>
+			</div>
+			<div id="tab_description_tabbed" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<h2>Details</h2>
+					<div class="std" id="tabDesc">Description
+					</div>
+				</div>
+			</div>
+		</div>
+		
+        <div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_specs_tabbed">Specifications</a>
+				</h4>
+			</div>
+			<div id="tab_specs_tabbed" class="panel-collapse collapse ">
+				<div class="panel-body">					
+					<h2>Specifications</h2>
+					<div class="std" id="tabSpecs">Specifications
+					</div>			
+				</div>
+			</div>
+		</div>
+		
+	<!--	<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_doc_tabbed">Documentation</a>
+				</h4>
+			</div>
+			<div id="tab_doc_tabbed" class="panel-collapse collapse ">
+				<div class="panel-body">
+					<h2>Documentation</h2>
+					<div class="std" id="tabDoc">Documentation
+					</div>	
+				</div>
+			</div>
+		</div>-->
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_warr_tabbed">Warranty & Return Policy</a>
+				</h4>
+			</div>
+			<div id="tab_warr_tabbed" class="panel-collapse collapse ">
+				<div class="panel-body">
+					<h2>warranty</h2>
+					<div class="std" id="tabWarr">
+						
+			<p><strong>Warranty:</strong></p>
+			<p>
+			We confidently back our systems with a 2-Year warranty on the chassis and all internal components. You may extend your warranty within the servers customizable options before adding to cart.
+			</p>
+			<p><strong>Return Policy</strong></p>
+			<p>
+			Any DOA (Dead on arrival) or damaged server you receive may be returned for a FULL refund within 30 days of receiving the server. Any returns for any other 
+	reason are subject to a %20 restocking fee. <a href="https://www.stalliontek.com/about-stalliontek/#warr" target="_blank" style="color:#0072c6">Click here </a>for more information.</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+        </div>
+    </div> 
+				
+					
+            </div>
+			
+			<form action="<?php echo $this->getSubmitUrl($_product) ?>" method="post" id="product_addtocart_form"<?php if($_product->getOptions()): ?> enctype="multipart/form-data"<?php endif; ?>>
+        <?php echo $this->getBlockHtml('formkey') ?>
+        <div class="no-display">
+            <input type="hidden" name="product" value="<?php echo $_product->getId() ?>" />
+            <input type="hidden" name="related_product" id="related-products-field" value="" />
+        </div>
+            <div class="product-shop col-sm-<?php echo 12-Mage::getStoreConfig("porto_settings/product_view/product_image_size", $code); ?>">
+            <?php
+                if (Mage::getStoreConfig("porto_settings/product_view/prev_next",$code)){
+            ?>
+                <div class="prev-next-products">
+                    <?php $_prev = Mage::helper('porto')->getPreviousProduct(); ?>
+                    <?php $_next = Mage::helper('porto')->getNextProduct(); ?>
+                     
+                    <?php if($_prev): ?>
+                    <div class="product-nav product-prev">
+                        <a href="<?php echo $_prev->getProductUrl();?>" title="<?php echo $this->__("Previous Product"); ?>">
+                            <?php echo Mage::getStoreConfig("porto_settings/product_view/prev_text",$code); ?>
+                        </a>
+                        <div class="product-pop theme-border-color">
+                            <?php
+                            $image_src = $this->helper('catalog/image')->init($_prev, 'image')->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize(80);
+                            ?>
+                            <img class="product-image" src="<?php echo $image_src; ?>" alt="<?php echo $this->__('Previous');?>"/>
+                            <h3 class="product-name"><?php echo $_helper->productAttribute($_prev, $_prev->getName(), 'name') ?></h3>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if($_next): ?>
+                    <div class="product-nav product-next">
+                        <a class="product-next" href="<?php echo $_next->getProductUrl();?>" title="<?php echo $this->__("Next Product"); ?>"><?php echo Mage::getStoreConfig("porto_settings/product_view/next_text",$code); ?></a>
+                        <div class="product-pop theme-border-color">
+                            <?php
+                            $image_src = $this->helper('catalog/image')->init($_next, 'image')->constrainOnly(FALSE)->keepAspectRatio(TRUE)->keepFrame(FALSE)->resize(80);
+                            ?>
+                            <img class="product-image" src="<?php echo $image_src; ?>" alt="<?php echo $this->__('Previous');?>"/>
+                            <h3 class="product-name"><?php echo $_helper->productAttribute($_next, $_next->getName(), 'name') ?></h3>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+            <?php
+                }
+            ?>
+                <div class="product-name">
+                    <h1 <?php if($enabled_richsnippets): ?>itemprop="name"<?php endif; ?>><?php echo $_helper->productAttribute($_product, $_product->getName(), 'name') ?></h1>
+                </div>
+                <?php if($enabled_richsnippets): ?>
+                <?php
+                    $storeId = Mage::app()->getStore()->getId();
+                    $summaryData = Mage::getModel('review/review_summary')->setStoreId($storeId)->load($_product->getId());
+                ?>
+                <?php if ($summaryData['reviews_count']): ?>
+                    <span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating" class="no-display">
+                        <span itemprop="ratingValue"><?php echo $summaryData['rating_summary']; ?></span>
+                        <span itemprop="reviewCount"><?php echo $summaryData['reviews_count']; ?></span>
+                        <span itemprop="bestRating">100</span>
+                        <span itemprop="worstRating">0</span>
+                    </span>
+                <?php endif; ?>
+                <?php endif; ?>
+
+                <?php echo $this->getReviewsSummaryHtml($_product, false, true)?>
+                <?php if ($_product->getShortDescription()):?>
+                    <div class="short-description">
+                        <h2><?php echo $this->__('Quick Overview') ?></h2>
+                        <div class="std" <?php if($enabled_richsnippets): ?>itemprop="description"<?php endif; ?>><br><?php echo $_helper->productAttribute($_product, nl2br($_product->getShortDescription()), 'short_description') ?></div>
+                    </div>
+                <?php endif;?>
+                <div class="product-info">
+                    <div <?php if($enabled_richsnippets) echo $helper_richsnippets->getOfferItemscope(); ?>>
+                        <?php echo $this->getChildHtml('product_type_data'); ?>
+                        <?php echo $this->getTierPriceHtml(); ?>
+                        <?php echo $price_properties; ?>
+                    </div>
+                    <?php /* echo $this->getChildHtml('extrahint') ?>
+                    <?php  if ($this->canEmailToFriend()): ?>
+                        <p class="email-friend"><a href="<?php echo $this->helper('catalog/product')->getEmailToFriendUrl($_product) ?>"><?php echo $this->__('Email to a Friend') ?></a></p>
+                    <?php endif; */ ?>
+                    <?php if($sku = $_product->getSku()): ?>
+                        <?php if($enabled_richsnippets): ?><meta itemprop="productID" content="sku:<?php echo $sku; ?>" /><?php endif; ?>
+                    <?php endif; ?>
+                    <?php echo $this->getChildHtml('alert_urls') ?>
+                    <?php echo $this->getChildHtml('other');?>
+					<p class="condition">Condition: <span>Refurbished</span></p>
+					
+                </div>
+                <?php if (!$this->hasOptions()):?>
+                    <div class="clearer"></div>
+                    <div class="add-to-box">
+                        <?php if($_product->isSaleable()): ?>
+						   
+                            <?php echo $this->getChildHtml('addtocart') ?>
+                            <?php if( $this->helper('wishlist')->isAllow() || $_compareUrl=$this->helper('catalog/product_compare')->getAddUrl($_product)): ?>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                        <?php echo $this->getChildHtml('addto') ?>
+                    </div>
+                    <?php echo $this->getChildHtml('extra_buttons') ?>
+                <?php elseif (!$_product->isSaleable()): ?>
+                    <div class="clearer"></div>
+                    <div class="add-to-box">
+                        <?php echo $this->getChildHtml('addto') ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($_product->isSaleable() && $this->hasOptions()):?>
+					<div class="customInfo">
+						<p id="bayDesc">This product has <span id="bayInfo"></span>, please click below if you are looking for a different number of bays.</p>
+						<div id="bayBtnDiv">						
+						</div>
+						<div class="productPage1">
+		
+							<div>
+								Want 1 on 1 help customizing your order? Call Us: <span style="color:#ffffff;">1-844-760-5565</span>
+							</div>
+						</div>
+					</div>
+					
+					<div class="product-collateral" id="tabs-mid">
+						        <div class="product-tabs panel-group product-tab-accordion" id="product_tab_accordion">
+		
+        <div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" href="#tab_description_tabbed2">Product Description</a>
+				</h4>
+			</div>
+			<div id="tab_description_tabbed2" class="panel-collapse collapse in">
+				<div class="panel-body">
+					<h2>Details</h2>
+					<div class="std" id="tabDesc">Description
+					</div>
+				</div>
+			</div>
+		</div>
+		
+        <div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_specs_tabbed2">Specifications</a>
+				</h4>
+			</div>
+			<div id="tab_specs_tabbed2" class="panel-collapse collapse ">
+				<div class="panel-body">					
+					<h2>Specifications</h2>
+					<div class="std" id="tabSpecs">Specifications
+					</div>			
+				</div>
+			</div>
+		</div>
+		
+	<!--	<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_doc_tabbed">Documentation</a>
+				</h4>
+			</div>
+			<div id="tab_doc_tabbed" class="panel-collapse collapse ">
+				<div class="panel-body">
+					<h2>Documentation</h2>
+					<div class="std" id="tabDoc">Documentation
+					</div>	
+				</div>
+			</div>
+		</div>-->
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					<a data-toggle="collapse" data-parent="#product_tab_accordion" class="collapsed" href="#tab_warr_tabbed2">Warranty & Return Policy</a>
+				</h4>
+			</div>
+			<div id="tab_warr_tabbed2" class="panel-collapse collapse ">
+				<div class="panel-body">
+					<h2>warranty</h2>
+					<div class="std" id="tabWarr">
+						
+			<p><strong>Warranty:</strong></p>
+			<p>
+			We confidently back our systems with a 2-Year warranty on the chassis and all internal components. You may extend your warranty within the servers customizable options before adding to cart.
+			</p>
+			<p><strong>Return Policy</strong></p>
+			<p>
+			Any DOA (Dead on arrival) or damaged server you receive may be returned for a FULL refund within 30 days of receiving the server. Any returns for any other 
+	reason are subject to a %20 restocking fee. <a href="https://www.stalliontek.com/about-stalliontek/#warr" target="_blank" style="color:#0072c6">Click here </a>for more information.</p>
+
+					</div>
+				</div>
+			</div>
+		</div>
+			
+        </div>
+					</div> 
+					
+                    <?php echo $this->getChildChildHtml('container1', '', true, true) ?>
+			
+                <?php endif;?>
+			
+				<div class="product-options-bottom myOptBottom">
+					<span style="font-size:36px; margin-bottom:20px">
+					Need Help? </span><br> 
+					<span style="font-size:20px;">Call us: 1-877-449-5003</span><br>
+					<span>
+						<i class="fa fa-star" style="color:#ffb119"></i>
+						<span style="color:#ffffff;">Lowest Price Guaranteed. </span>
+						<a href="https://www.stalliontek.com/price-match" target="_blank" style="color:#ffb119;text-decoration:underline;">Learn more</a>
+					</span>
+				</div>
+				
+                <div class="clearer"></div>
+                <?php echo $this->getChildHtml('addthis_sharetool'); ?>
+            </div>
+
+        </div>
+        <?php if ($_product->isSaleable() && $this->hasOptions()):?>		
+            <?php echo $this->getChildChildHtml('container2', '', true, true) ?>
+        <?php endif;?>
+    </form>
+<?php if(Mage::getStoreConfig('ajaxcart/addtocart/enableproduct') && (Mage::app()->getFrontController()->getRequest()->getModuleName() == "catalog") || (Mage::app()->getFrontController()->getRequest()->getModuleName() == "quickview")): ?>
+    <script type="text/javascript">
+    //<![CDATA[
+        var productAddToCartForm = new VarienForm('product_addtocart_form');
+        productAddToCartForm.submit = function(button, url) {
+            if (this.validator.validate()) {
+                var form = this.form;
+                var oldUrl = form.action;
+
+                if (url) {
+                   form.action = url;
+                }
+                var e = null;
+                if (!url) {
+                    url = jQuery('#product_addtocart_form').attr('action');
+                }
+                if(url.indexOf("wishlist/index/cart") != -1){
+                    url = url.replace("wishlist/index/cart","ajaxcart/index/add"); // New Code
+                } else {
+                    url = url.replace("checkout/cart","ajaxcart/index"); // New Code
+                }
+                url = url.replace("http://", "//");
+                url = url.replace("https://", "//");
+                var data = jQuery('#product_addtocart_form').serialize();
+                data += '&isAjax=1';
+                var is_quickview = false;
+                if(jQuery("body").hasClass("quickview-index-view")){
+                    is_quickview = true;
+                }
+                if(is_quickview)
+                    window.parent.jQuery("#loading-mask").show();
+                else
+                    jQuery('#loading-mask').show();
+                try {
+                    jQuery.ajax({
+                        url : url,
+                        dataType : 'json',
+                        type : 'post',
+                        data : data,
+                        success : function(data) {
+                            if(is_quickview)
+                                window.parent.jQuery('#loading-mask').hide();
+                            else
+                                jQuery('#loading-mask').hide();
+                            if(data.status == 'ERROR'){
+                                if(is_quickview)
+                                    window.parent.alert(data.message.replace("<br/>",""));
+                                else
+                                    alert(data.message.replace("<br/>",""));
+                            }else{
+                                if(is_quickview){
+                                    if(window.parent.jQuery('.header-container .mini-cart')){
+                                        window.parent.jQuery('.header-container .mini-cart').replaceWith(data.toplink);
+                                    }
+                                    if(window.parent.jQuery('.fixed-header .mini-cart')){
+                                        window.parent.jQuery('.fixed-header .mini-cart').replaceWith(data.toplink);
+                                    }
+									if(window.parent.jQuery('.sticky-header .mini-cart')){
+										window.parent.jQuery('.sticky-header .mini-cart').replaceWith(data.toplink);
+									}
+                                    if(window.parent.jQuery('.col-right .block.block-cart')){
+                                        window.parent.jQuery('.col-right .block.block-cart').replaceWith(data.cart_sidebar);
+                                    }
+                                    window.parent.jQuery('#after-loading-success-message #success-message-container .msg-box').html(data.message);
+                                    <?php $autoclose = Mage::getStoreConfig('ajaxcart/addtocart/autoclose', $code);?>
+                                    ajaxcart_sec = <?php echo ($autoclose && is_numeric($autoclose))?$autoclose:5; ?>;
+                                    timer_sec = ajaxcart_sec;
+                                    window.parent.jQuery('#after-loading-success-message').fadeIn(200);
+                                    ajaxcart_timer = setInterval(function(){
+                                        timer_sec --;
+                                        window.parent.jQuery('#after-loading-success-message .timer').html(timer_sec);
+                                    },1000)
+                                    setTimeout(function(){
+                                        window.parent.jQuery('#after-loading-success-message').fadeOut(200);
+                                        clearTimeout(ajaxcart_timer);
+                                        setTimeout(function(){
+                                            window.parent.jQuery('#after-loading-success-message .timer').html(ajaxcart_sec);
+                                        }, 1000);
+                                    },ajaxcart_sec*1000);
+                                }
+                                else {
+                                    if(jQuery('.header-container .mini-cart')){
+                                        jQuery('.header-container .mini-cart').replaceWith(data.toplink);
+                                    }
+                                    if(jQuery('.fixed-header .mini-cart')){
+                                        jQuery('.fixed-header .mini-cart').replaceWith(data.toplink);
+                                    }
+									if(jQuery('.sticky-header .mini-cart')){
+										jQuery('.sticky-header .mini-cart').replaceWith(data.toplink);
+									}
+                                    if(jQuery('.col-right .block.block-cart')){
+                                        jQuery('.col-right .block.block-cart').replaceWith(data.cart_sidebar);
+                                    }
+                                    jQuery('#after-loading-success-message #success-message-container .msg-box').html(data.message);
+                                    <?php $autoclose = Mage::getStoreConfig('ajaxcart/addtocart/autoclose', $code);?>
+                                    ajaxcart_sec = <?php echo ($autoclose && is_numeric($autoclose))?$autoclose:5; ?>;
+                                    timer_sec = ajaxcart_sec;
+                                    jQuery('#after-loading-success-message').fadeIn(200);
+                                    ajaxcart_timer = setInterval(function(){
+                                        timer_sec --;
+                                        jQuery('#after-loading-success-message .timer').html(timer_sec);
+                                    },1000)
+                                    setTimeout(function(){
+                                        jQuery('#after-loading-success-message').fadeOut(200);
+                                        clearTimeout(ajaxcart_timer);
+                                        setTimeout(function(){
+                                            jQuery('#after-loading-success-message .timer').html(ajaxcart_sec);
+                                        }, 1000);
+                                    },ajaxcart_sec*1000);
+                                }
+                            }
+                        }
+                    });
+                } catch (e) {
+                }                
+                this.form.action = oldUrl;
+                if (e) {
+                    throw e;
+                }
+            } else {
+                if(jQuery('#product-options-wrapper'))
+                    jQuery('#product-options-wrapper').scrollToMe();
+            }
+        }.bind(productAddToCartForm);
+    //]]>
+    </script>
+<?php else : ?>
+    <script type="text/javascript">
+    //<![CDATA[
+        var productAddToCartForm = new VarienForm('product_addtocart_form');
+        productAddToCartForm.submit = function(button, url) {
+            if (this.validator.validate()) {
+                var form = this.form;
+                var oldUrl = form.action;
+
+                if (url) {
+                   form.action = url;
+                }
+                var e = null;
+                try {
+                    this.form.submit();
+                } catch (e) {
+                }
+                this.form.action = oldUrl;
+                if (e) {
+                    throw e;
+                }
+
+                if (button && button != 'undefined') {
+                    button.disabled = true;
+                }
+            } else {
+                if(jQuery('#product-options-wrapper'))
+                    jQuery('#product-options-wrapper').scrollToMe();
+            }
+        }.bind(productAddToCartForm);
+        //]]>
+        </script>
+        <?php endif; ?>
+        <script type="text/javascript">
+        productAddToCartForm.submitLight = function(button, url){
+            if(this.validator) {
+                var nv = Validation.methods;
+                delete Validation.methods['required-entry'];
+                delete Validation.methods['validate-one-required'];
+                delete Validation.methods['validate-one-required-by-name'];
+                // Remove custom datetime validators
+                for (var methodName in Validation.methods) {
+                    if (methodName.match(/^validate-datetime-.*/i)) {
+                        delete Validation.methods[methodName];
+                    }
+                }
+
+                if (this.validator.validate()) {
+                    if (url) {
+                        this.form.action = url;
+                    }
+                    this.form.submit();
+                }
+                Object.extend(Validation.methods, nv);
+            } else {
+                if(jQuery('#product-options-wrapper'))
+                    jQuery('#product-options-wrapper').scrollToMe();
+            }
+        }.bind(productAddToCartForm);
+    </script>
+    </div>
+
+    <div class="product-collateral" id="tabs-bottom">
+        <?php echo $this->getChildHtml('product_additional_data'); ?>
+    </div>
+	
+    <?php echo $this->getChildHtml('upsell_products'); ?>
+</div>
+
+<!--<div class="row">
+	<div class="col-sm-12">
+		<?/*php echo $this->getBlockHtml('catalog.product.related'); */?>
+	</div>
+</div>-->
+
+
+<script type="text/javascript">
+    jQuery(function($){
+        $("body.quickview-index-view .no-rating a, body.quickview-index-view .ratings a").off('click').on("click",function(e){
+            window.parent.location.href = $(this).attr("href");
+            window.parent.jQuery.fancybox.close();
+        });
+    <?php
+    if($enable_addtocart_sticky){
+    ?>
+        p_scrolled = false;
+        $(window).scroll(function(){
+            if(400<$(window).scrollTop() && !p_scrolled){
+                $('.sticky-product').removeClass("hide");
+                p_scrolled = true;
+            }
+            if(400>=$(window).scrollTop() && p_scrolled){
+                $('.sticky-product').addClass("hide");
+                p_scrolled = false;
+            }
+        });
+    <?php
+    }
+    ?>
+    <?php
+    if($move_product_tab){
+    ?>
+        $(".product-info").before($(".product-tabs"));
+    <?php
+    }
+    ?>
+   
+   });
+</script>
+<script type="text/javascript">
+    jQuery(function($){
+		
+		/* for price reset button */
+	var resetPrice = $(".product-info .price-box .price-as-configured .price").html();				
+	$('<div class="resetDiv"><button type="reset" value="Reset" id="myReset" class="btn-reset">RESET SELECTIONS</button></div>').insertAfter("#product-options-wrapper");
+
+	$("#myReset").click(function () {
+		$(".product-options-bottom .price-box .full-product-price span.price").html(resetPrice);
+	});
+
+	/* for left tabs */
+	$("#tabDesc").html($('#tabs-bottom #tab_description_tabbed_contents .std').html());
+	
+	var productTitle = $(".product-name h1").html();
+	if(productTitle.includes("DL360 G9")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl360g9.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b>Form Factor:</b></td><td> 1U Rack</td></tr>		<tr><td><b>Processors:</b></td><td> Supports up to 2x Intel® Xeon E5-2600 v3 Series</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 45 MB L3 cache</td></tr>		<tr><td><b>Memory:</b></td><td> Supports up to 768GB</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 8x hot-plug 2.5" SAS or SATA or Up to 4x hot-plug 3.5" SAS or SATA</td></tr>		<tr><td><b>Internal Storage:</b></td><td> Up to 20TB SFF SAS or Up to 8TB</td></tr>		<tr><td><b>I/O Slots:</b></td><td> Up to 3 PCIe 3.0 slots</td></tr>		<tr><td><b>Remote Management:</b></td><td> HP Insight Control with Integrated Lights-Out (iLO 4) Advanced</td></tr>	</table>');
+	
+		if(productTitle.includes("4-Bay")){
+			$("#bayInfo").html("4 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360-g9-8-bay-build-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360-g9-4-bay-build-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R720 ")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r720.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b>Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server </td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon E5-2600 or E5-2600 v2 Series Processors</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 768GB PC3-10600R, PC3-12800R, PC3-8500R</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 8x 2.5"/3.5" SAS/SATA hard drives or Up to 16x 2.5" SAS/SATA hard drives</td></tr>		<tr><td><b>Internal Storage:</b></td><td> 8TB</td></tr>		<tr><td><b>I/O Slots:</b></td><td> 7 PCIe slots</td></tr>		<tr><td><b> Remote Management:</b></td><td> iDRAC7 with Lifecycle Controller</td></tr>		<tr><td><b> Power Supply Unit: </b></td><td> 495W PSU, 750W PSU, or 1100W PSU</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes('2.5" 8-Bay')){
+			$("#bayInfo").html('2.5" 8 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-3-5-8-bay-configure-to-order"><span>3.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-16-bay-configure-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('3.5" 8-Bay')){
+			$("#bayInfo").html('3.5" 8 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-2-5-8-bay-configure-to-order"><span>2.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-16-bay-configure-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('16-Bay')){
+			$("#bayInfo").html('16 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-2-5-8-bay-configure-to-order"><span>2.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720-3-5-8-bay-configure-to-order"><span>3.5" 8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		
+	}
+	else if(productTitle.includes("DL360e G8")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl360eg8.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b>Form Factor:</b></td><td> 1U Rack</td></tr>		<tr><td><b> Processors: </b></td><td>Supports up to 2x Intel® Xeon E5-2400 Series</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 20 MB L3 cache</td></tr>		<tr><td><b> Memory:</b></td><td> Supports up to 384GB</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 8x hot-plug SFF 2.5" SAS/SATA or Up to 4x hot-plug LFF 3.5" SAS or SATA</td></tr>		<tr><td><b> Internal Storage:</b></td><td> Up to 8 TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>Up to 2 PCIe G2 Slots</td></tr>		<tr><td><b> Remote Management: </b></td><td>HP Insight Control with Integrated Lights-Out (iLO 3) Advanced</td></tr>	</table>');
+		
+		if(productTitle.includes("4-Bay")){
+			$("#bayInfo").html("4 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360e-g8-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360e-g8-4-bay-configure-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	} /* end of example in clone0711 */
+	else if(productTitle.includes("DL360 G7")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl360g7.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">			<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>			<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>			<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>			<tr><td><b>Form Factor:</b></td><td> 1U Rack</td></tr>			<tr><td><b>Processors: </b></td><td>Supports up to 2x Intel® Xeon 5500 or 5600 Series</td></tr>			<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3 cache</td></tr>			<tr><td><b>Memory:</b></td><td> Supports up to 384GB on 18 DIMM Slots</td></tr>			<tr><td><b>Hard Drives:</b></td><td> Up to 4x 2.5" SAS/SATA drives or 8x hot-plug 2.5" SAS/SATA drives</td></tr>			<tr><td><b>Internal Storage:</b></td><td> Up to 4 TB</td></tr>			<tr><td><b>I/O Slots: </b></td><td>Up to 2 PCIe G2 Slots</td></tr>			<tr><td><b>Remote Management: </b></td><td>HP Insight Control with Integrated Lights-Out (iLO 3) Advanced</td></tr>			<tr><td><b>Power Supply Unit:</b></td><td> 460W PSU, 750W PSU or 1200W PSU</td></tr>		</tbody></table>');
+		
+		if(productTitle.includes("4-Bay")){
+			$("#bayInfo").html("4 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360-g7-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl360-g7-4-bay-configure-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("DL380 G7")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl380g7.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rack</td></tr>		<tr><td><b>Processors:</b></td><td> Up to 2x dual, quad or six-core Intel® Xeon 5600 Series</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3</td></tr>		<tr><td><b>Memory:</b></td><td> Supports up to 384 GB; 18 DIMM slots</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Supports 16x hot-plug 2.5"SAS/SATA drives or 8x hot-plug 2.5"SAS/SATA drives</td></tr>		<tr><td><b>Internal Storage:</b></td><td> Up to 8 TB of data</td></tr>		<tr><td><b>I/O Slots:</b></td><td> 6 PCI-Express Gen2 slots</td></tr>		<tr><td><b>Remote Management:</b></td><td> HP Integrated Lights-Out (iLO) for ProLiant</td></tr>		<tr><td><b>Power Supply Unit:</b></td><td>460W PSU, 750W PSU or 1200W PSU</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl380-g7-16-bay-configure-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("16-Bay")){
+			$("#bayInfo").html("16 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-hp-proliant-dl380-g7-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R620")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r620.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b> Form Factor: </b></td><td>1U Rack</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 2x Intel Xeons E5-2600 Series</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 2.5MB per core</td></tr>		<tr><td><b> Memory:</b></td><td> Fully expandable up to 768GB PC3-10600R, PC3-8500R</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 10x 2.5" SAS/SATA hard drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 10TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>3 PCIe slots</td></tr>		<tr><td><b> Remote Management: </b></td><td> iDRAC7 with Lifecycle Controller</td></tr>		<tr><td><b> Power Supply Unit: </b></td><td> 495W PSU, 750W PSU, or 1100W PSU</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes('4-Bay')){
+			$("#bayInfo").html('4 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-10-bay-configure-to-order"><span>10 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('8-Bay')){
+			$("#bayInfo").html('8 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-4-bay-configure-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-10-bay-configure-to-order"><span>10 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('10-Bay')){
+			$("#bayInfo").html('10 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-4-bay-configure-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r620-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}		
+	}
+	else if(productTitle.includes("R510")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r510.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">			<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>			<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>			<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>			<tr><td><b> Form Factor: </b></td><td>2U Rack</td></tr>			<tr><td><b> Processors: </b></td><td>Up to 2x Quad or Six-Core Intel Xeon 55xx or 56xx Series</td></tr>			<tr><td><b> Processor Cache:</b></td><td> Up to 8MB</td></tr>			<tr><td><b> Memory:</b></td><td> Fully expandable up to 128GB PC3-10600 ECC RDIMM, PC3-8500 ECC RDIMM. Up to 16GB PC3-10600 ECC UDIMM, PC3-8500 ECC UDIMM</td></tr>			<tr><td><b> Hard Drives:</b></td><td> Up to 12x 3.5" SAS/SATA Hard Drives</td></tr>			<tr><td><b> Internal Storage: </b></td><td>Up to 24TB</td></tr>			<tr><td><b> I/O Slots: </b></td><td>3 PCIe G2 slots + 1 storage slot</td></tr>			<tr><td><b> Remote Management: </b></td><td> iDRAC 6 (optional)</td></tr>			<tr><td><b> Power Supply Unit: </b></td><td> 750W PSU or 1100W PSU</td></tr>		</tbody></table>');
+		
+		if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r510-12-bay-2u-configure-to-order"><span>12 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("12-Bay")){
+			$("#bayInfo").html("12 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r510-8-bay-2u-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R710")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r710.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b> Form Factor: </b></td><td>2U Rack</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 2x Quad or Six-Core Intel Xeon 55xx or 56xx Series</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 12MB</td></tr>		<tr><td><b> Memory:</b></td><td> Fully expandable up to 288GB PC3-8500 ECC RDIMM. Up to 144GB PC3-10600 ECC RDIMM. Up to 24GB PC3-8500 ECC UDIMM, PC3-10600 ECC UDIMM</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 8x 2.5" SAS/SATA hard drives or 6x 3.5" SAS/SATA hard drives. Solid State Drives may also be available, please call <b>240-803-4005</b> with any questions.</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 8TB (8-bay)/12TB (6-bay)</td></tr>		<tr><td><b> I/O Slots: </b></td><td>4 PCIe G2 slots + 1 storage slot</td></tr>		<tr><td><b> Remote Management: </b></td><td> iDRAC 6 Enterprise (optional)</td></tr>		<tr><td><b> Power Supply Unit: </b></td><td>570W PSU or 870W PSU</td></tr>		</tbody></table>');
+		
+		if(productTitle.includes("6-Bay")){
+			$("#bayInfo").html("6 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/dell-poweredge-r710-8-bay-customizable-server"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/dell-poweredge-r710-6-bay-customizable-server"><span>6 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R720xd")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r720xd.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b>Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server </td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon E5-2600 or E5-2600 v2 Series Processors</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 768GB PC3-10600R</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 24x 2.5" SAS/SATA drives or Up to 12x 3.5" SAS/SATA</td></tr>		<tr><td><b>Internal Storage:</b></td><td> 48TB</td></tr>		<tr><td><b>I/O Slots:</b></td><td> Six PCIe 3.0</td></tr>		<tr><td><b>Remote Management:</b></td><td> iDRAC7 Express or iDRAC7 Enterprise</td></tr>		<tr><td><b>Power Supply Unit: </b></td><td> 495W PSU, 750W PSU, or 1100W PSU</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("12-Bay")){
+			$("#bayInfo").html("12 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720xd-24-bay-build-to-order"><span>24 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("24-Bay")){
+			$("#bayInfo").html("24 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r720xd-12-bay-build-to-order"><span>12 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R820")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r820.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>	<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>	<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>	<tr><td><b> Form Factor: </b></td><td>2U Rack</td></tr>	<tr><td><b> Processors: </b></td><td> Up to 4x E5-4600 Series Processor</td></tr>	<tr><td><b> Processor Cache:</b></td><td> Up to 20MB L3</td></tr>	<tr><td><b> Memory:</b></td><td> Up to 1.5 TB (48 DIMM slots)</td></tr>	<tr><td><b> Hard Drives:</b></td><td> Up to 16x 2.5” SAS/SATA/SSD or Up to 8x 2.5” SAS/ SATA/ SSD</td></tr>	<tr><td><b> Internal Storage: </b></td><td>Up to 19.2 TB</td></tr>	<tr><td><b> I/O Slots: </b></td><td>7 PCIe slots</td></tr>	<tr><td><b> Remote Management: </b></td><td>iDRAC7 Express or iDRAC7 Enterprise</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r820-16-bay-configure-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("16-Bay")){
+			$("#bayInfo").html("16 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r820-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R730 ")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r730.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">			<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> Dell</td></tr>			<tr><td><b>Product Line:</b></td><td> PowerEdge</td></tr>			<tr><td><b>Product Type:</b></td><td> Rackmount Server </td></tr>			<tr><td><b>Form Factor:</b></td><td> 2U Rackmount</td></tr>			<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon E5-2600 v3 Series Processors</td></tr>			<tr><td><b>Memory:</b></td><td> Up to 768GB DDR4 2133 MT/s RDIMM and LRDIMM (24 DIMM Slots)</td></tr>			<tr><td><b>Hard Drives:</b></td><td> Up to 16 or 8 x 2.5" SAS/SATA/SSD drives or Up to 8x 3.5" SAS/SATA drives</td></tr>			<tr><td><b>Internal Storage:</b></td><td> 29TB or up to 48TB</td></tr>			<tr><td><b>I/O Slots:</b></td><td> 7 PCIe slots</td></tr>			<tr><td><b>Remote Management:</b></td><td> iDRAC8 with Lifecycle Controller</td></tr>		</tbody></table>');
+		
+		if(productTitle.includes('2.5" 8-Bay')){
+			$("#bayInfo").html('2.5" 8 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-3-5-8-bay-build-to-order"><span>3.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-16-bay-build-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('3.5" 8-Bay')){
+			$("#bayInfo").html('3.5" 8 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-2-5-8-bay-build-to-order"><span>2.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-16-bay-build-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		if(productTitle.includes('16-Bay')){
+			$("#bayInfo").html('16 Bays');
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-2-5-8-bay-build-to-order"><span>2.5" 8 Bays<i class="icon-right-open"></i></span></a><a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730-3-5-8-bay-build-to-order"><span>3.5" 8 Bays<i class="icon-right-open"></i></span></a>');
+		}	
+	}
+	else if(productTitle.includes("R730xd")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r730xd.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b>Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server </td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon E5-2600 v3 Series Processors or Up to 2x Intel Xeon E5-2600 v4 Series Processors</td></tr>		<tr><td><b>Memory:</b></td><td> Up to 1.5TB DDR4 2400 MT/s (24 DIMM Slots) or Up to 768GB DDR4 2133 MT/s RDIMM and LRDIMM (24 DIMM Slots)</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 24x 2.5" SAS/SATA/SSD drives or Up to 12x 3.5" SAS/SATA/SSD drives</td></tr>		<tr><td><b>Internal Storage:</b></td><td> 46.8TB</td></tr>		<tr><td><b>I/O Slots:</b></td><td> 7 PCIe slots</td></tr>		<tr><td><b>Remote Management:</b></td><td> iDRAC8 with Lifecycle Controller</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("12-Bay")){
+			$("#bayInfo").html("12 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730xd-24-bay-build-to-order"><span>24 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("24-Bay")){
+			$("#bayInfo").html("24 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r730xd-12-bay-build-to-order"><span>12 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R900")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r900.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b> Form Factor: </b></td><td>4U Rack</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 4x Dual/Quad/Hex-Core 7200/7300/7400 series Intel Xeon processors</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 8MB L3 cache per processor</td></tr>		<tr><td><b> Memory:</b></td><td> Fully expandable up to 256GB PC2-5300 ECC FB-DIMM, PC2-10600 ECC FB-DIMM</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 8x 2.5" SAS hard drives or Up to 5x 3.5" SAS / SATA hard drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 5TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>Seven available PCI Express slots</td></tr>		<tr><td><b> Remote Management: </b></td><td>Baseboard Management Controller w/IPMI 2.0 compliance. DRAC 5 (optional)</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("5-Bay")){
+			$("#bayInfo").html("5 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r900-8-bay-configure-to-order"><span>8 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("8-Bay")){
+			$("#bayInfo").html("8 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r900-5-bay-configure-to-order"><span>5 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	else if(productTitle.includes("R910")){
+		$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r910.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	  <tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>	  <tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>	  <tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>	  <tr><td><b> Form Factor: </b></td><td>4U Rack</td></tr>	  <tr><td><b> Processors: </b></td><td>Up to 4 Quad, Six or Eight-Core Intel Xeon Processors</td></tr>	  <tr><td><b> Processor Cache:</b></td><td> Up to 24MB</td></tr>	  <tr><td><b> Memory:</b></td><td> Fully expandable up to 1TB PC3-10600 ECC RDIMM</td></tr>	  <tr><td><b> Hard Drives:</b></td><td> Up to 16x 2.5" SAS/SSD Hard Drives or Up to 4x 2.5" SAS/SSD Hard Drives</td></tr>	  <tr><td><b> Internal Storage: </b></td><td>Up to 16TB or Up to 4TB</td></tr>	  <tr><td><b> I/O Slots: </b></td><td>Up to 10 PCIe G2 slots</td></tr>	  <tr><td><b> Remote Management: </b></td><td> iDRAC 6 Express, iDrac 6 Enterprise with vFlash (optional)</td></tr>	  <tr><td><b> Power Supply Unit: </b></td><td>1100W PSU</td></tr>	</tbody></table>');
+		
+		if(productTitle.includes("4-Bay")){
+			$("#bayInfo").html("4 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r910-16-bay-configure-to-order"><span>16 Bays<i class="icon-right-open"></i></span></a>');
+		}
+		else if(productTitle.includes("16-Bay")){
+			$("#bayInfo").html("16 Bays");
+			$("#bayBtnDiv").html('<a class="btn-bays" href="https://www.stalliontek.com/refurbished-dell-poweredge-r910-4-bay-configure-to-order"><span>4 Bays<i class="icon-right-open"></i></span></a>');
+		}
+	}
+	/* tabSpecs for servers without bay options. @lin 20170719*/
+	else{
+		$("#bayDesc").css("display", "none");
+		
+		if(productTitle.includes("R410")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r410.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	<tbody><tr><td class="sol-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>	<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>	<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>	<tr><td><b> Form Factor: </b></td><td>1U Rack</td></tr>	<tr><td><b> Processors: </b></td><td>Up to 2x Quad-core or six-core Intel Xeon processor 5500 and 5600 series</td></tr>	<tr><td><b> Processor Cache:</b></td><td> Up to 12MB per core</td></tr>	<tr><td><b> Memory:</b></td><td> Fully expandable up to 128GB PC3-8500 ECC RDIMM. Up to 64GB PC3-10600 ECC RDIMM. Up to 32GB PC3-10600 ECC UDIMM, PC3-8500 ECC UDIMM</td></tr>	<tr><td><b> Hard Drives:</b></td><td> Up to 4x 3.5" SAS/SATA hard drives</td></tr>	<tr><td><b> Internal Storage: </b></td><td>Up to 8TB</td></tr>	<tr><td><b> I/O Slots: </b></td><td>1 PCIe G2 slot + 1 storage slot</td></tr>	<tr><td><b> Remote Management: </b></td><td>BMC, IPMI2.0 compliant. iDRAC6 Enterprise (optional), iDRAC6 Express (optional).</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("R610")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r610.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b> Form Factor: </b></td><td>1U Rack</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 2x Quad or Six Core Intel Xeons</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 4MB and 8MB</td></tr>		<tr><td><b> Memory:</b></td><td> Fully expandable up to 192GB PC3-10600R</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 6x 2.5" SAS/SATA hard drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 12TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>2 PCIe G2 slots + 1 storage</td></tr>		<tr><td><b> Remote Management: </b></td><td>iDRAC6 Enterprise (optional)</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("R630")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/r630.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	  <tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>	  <tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>	  <tr><td><b> Product Type:</b></td><td> Rackmount Server</td></tr>	  <tr><td><b> Form Factor: </b></td><td>1U Rack</td></tr>	  <tr><td><b> Processors: </b></td><td>Up to 2x Intel Xeons E5-2600 v3 Series</td></tr>	  <tr><td><b> Processor Cache:</b></td><td> Up to 2.5MB per core</td></tr>	  <tr><td><b> Memory:</b></td><td> Fully expandable up to 768GB DDR4 2133 MT/s RDIMM and LRDIMM (24 DIMM Slots)</td></tr>	  <tr><td><b> Hard Drives:</b></td><td> Up to 8x 2.5" SAS/SATA/SSD hard drives</td></tr>	  <tr><td><b> Internal Storage: </b></td><td>Up to 14TB</td></tr>	  <tr><td><b> I/O Slots: </b></td><td>3 PCIe slots</td></tr>	  <tr><td><b> Remote Management: </b></td><td> iDRAC8 with Lifecycle Controller</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("M620")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/m620.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Blade</td></tr>		<tr><td><b> Form Factor:</b></td><td> Half-Height Server Blade</td></tr>		<tr><td><b> Processors:</b></td><td> Up to 2x E5-2600 v2 Series</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 25MB cache per processor</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 768GB PC3-10600R, PC3-12800R, PC3-14900R or Up to 96GB PC3-12800E</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 2x 2.5" SAS or SATA hard drives</td></tr>		<tr><td><b> Internal Storage:</b></td><td> Up to 2TB</td></tr>		<tr><td><b> Remote Management:</b></td><td> iDRAC7</td></tr>	</tbody></table>');		
+		}		
+		else if(productTitle.includes("DL360 G6")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl360g6.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">			<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>			<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>			<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>			<tr><td><b>Form Factor:</b></td><td> 1U Rack</td></tr>			<tr><td><b>Processors: </b></td><td>Up to 2x dual, quad or six-core Intel® Xeon</td></tr>			<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3 cache</td></tr>			<tr><td><b>Memory:</b></td><td> Supports up to 192GB Registered Memory; 18 DIMM Slots</td></tr>			<tr><td><b>Hard Drives:</b></td><td> Up to 4x 2.5" SAS/SATA drives</td></tr>			<tr><td><b>Internal Storage:</b></td><td> Up to 4.8 TB</td></tr>			<tr><td><b>I/O Slots: </b></td><td>2 PCI-Express Gen 2 expansion slots</td></tr>			<tr><td><b>Remote Management: </b></td><td> HP Integrated Lights-Out 2 (iLO 2)</td></tr>			<tr><td><b>Power Supply Unit:</b></td><td> 460W PSU, 750W PSU or 1200W PSU</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("DL360p G8")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl360p.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b>Form Factor:</b></td><td> 1U Rack</td></tr>		<tr><td><b>Processors: </b></td><td>Supports up to 2x Intel® Xeon E5-2600 v2 Series</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 20 MB L3 cache</td></tr>		<tr><td><b> Memory:</b></td><td> Supports up to 384GB</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 8x hot-plug SFF SAS or SATA</td></tr>		<tr><td><b> Internal Storage:</b></td><td> Up to 8 TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>Up to 2 PCIe G2 Slots</td></tr>		<tr><td><b> Remote Management: </b></td><td>HP Insight Control with Integrated Lights-Out (iLO 3) Advanced</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("DL180 G6")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl180g6.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8">HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount Server</td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon 5500 and 5600 series processors</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 144GB PC3-8500 ECC RDIMM, 72GB PC3-10600R, or 36GB PC3-10600E</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 12x 3.5” SAS/SATA</td></tr>		<tr><td><b>Internal Storage:</b></td><td> 12TB </td></tr>		<tr><td><b>I/O Slots:</b></td><td> Six Pcle 3.0</td></tr>		<tr><td><b> Remote Management:</b></td><td> HP ProLiant Onboard Administrator</td></tr>	</tbody></table>');	
+		}
+		else if(productTitle.includes("DL380 G6")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl380g6.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>	<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>	<tr><td><b>Product Type:</b></td><td> 2U Rackmount</td></tr>	<tr><td><b>Form Factor:</b></td><td> 2U Rack</td></tr>	<tr><td><b>Processors:</b></td><td> Up to 2x Intel® Xeon 5500 or 5600 Series</td></tr>	<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3</td></tr>	<tr><td><b>Memory:</b></td><td> Up to 192 GB for Registered Memory configurations</td></tr>	<tr><td><b>Hard Drives:</b></td><td> Supports 8x hot-plug 2.5" SAS/SATA drives</td></tr>	<tr><td><b>Internal Storage:</b></td><td> Up to 12 TB (with optional LFF drive cage)</td></tr>	<tr><td><b>I/O Slots: </b></td><td> 6 PCI-express slots</td></tr>	<tr><td><b>Remote Management:</b></td><td> Insight Control with iLO Advanced</td></tr>	<tr><td><b>Power Supply Unit:</b></td><td>460W PSU, 750W PSU or 1200W PSU</td></tr>  	</tbody></table>');
+		}
+		else if(productTitle.includes("DL380p G8")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl380p.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> 2U Rackmount</td></tr>		<tr><td><b>Form Factor:</b></td><td> 2U Rack</td></tr>		<tr><td><b>Processors:</b></td><td> Up to 2x Intel Xeon E5-2600 Series Processors</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 25 MB L3</td></tr>		<tr><td><b>Memory:</b></td><td>Up to 768GB PC3L-8500 LRDIMM (24 DIMM Slots) or Up to 384GB PC3-10600 ECC RDIMM, HDIMM or Up to 128GB PC3-10600 UDIMM</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 8x 2.5" SAS/SATA hard drives</td></tr>		<tr><td><b>Internal Storage:</b></td><td> Up to 32.4 TB of data</td></tr>		<tr><td><b>I/O Slots:</b></td><td> 3 PCIe Gen3 Slots and 1 PCIe Gen2</td></tr>		<tr><td><b>Remote Management:</b></td><td> HP Integrated Lights-Out (iLO) for ProLiant</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("DL380 G9")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl380g9.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>	<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>	<tr><td><b>Product Type:</b></td><td> 2U Rackmount</td></tr>	<tr><td><b>Form Factor:</b></td><td> 2U Rack</td></tr>	<tr><td><b>Processors:</b></td><td> Up to 2x E5-2600 v3 series processors</td></tr>	<tr><td><b>Processor Cache:</b></td><td> Up to 25 MB L3</td></tr>	<tr><td><b>Memory:</b></td><td> Up to 768GB PC4L-14900 LRDIMM (24 DIMM Slots)</td></tr>	<tr><td><b>Hard Drives:</b></td><td> Supports up to 8x 2.5" SAS/SATA/SSD HP SC hard drives</td></tr>	<tr><td><b>Internal Storage:</b></td><td> Up to 20TB SFF SATA</td></tr>	<tr><td><b>I/O Slots: </b></td><td> 3 PCIe Gen3 Slots and 1 PCIe Gen2</td></tr>	<tr><td><b>Remote Management:</b></td><td> HP Integrated Lights-Out (iLO) for ProLiant</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("DL580 G7")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/dl580g7.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Rackmount </td></tr>		<tr><td><b>Form Factor:</b></td><td> 4U Rackmount </td></tr>		<tr><td><b>Processors: </b></td><td> Up to 4x Quad-core Intel Xeon Processors</td></tr>		<tr><td><b>Memory:</b></td><td> Up to 1TB PC3-10600 ECC RDIMM (64 DIMM Slots)</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 8x 2.5" SAS/SATA hard drivess</td></tr>		<tr><td><b>Internal Storage:</b></td><td> Up to 9.6TB </td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("BL460c G7")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/bl460cg7.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>		<tr><td><b>Product Type:</b></td><td> Blade</td></tr>		<tr><td><b>Form Factor:</b></td><td> Half-height Server Blade</td></tr>		<tr><td><b>Processors:</b></td><td> Up to 2x Intel Xeon 5500 or 5600 Series</td></tr>		<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3</td></tr>		<tr><td><b>Memory:</b></td><td> Up to 192 GB PC3-10600 ECC RDIMM or PC3-8500 ECC RDIMM</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 2x 2.5" hot-plug SAS, SATA, or SSD drives</td></tr>		<tr><td><b>Internal Storage: </b></td><td> Up to 1 TB</td></tr>		<tr><td><b>I/O Slots:</b></td><td> 2</td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("BL460c G8")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/bl460cg8.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">	<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>	<tr><td><b>Product Line:</b></td><td> ProLiant</td></tr>	<tr><td><b>Product Type:</b></td><td> Blade</td></tr>	<tr><td><b>Form Factor:</b></td><td> Half-height Server Blade</td></tr>	<tr><td><b>Processors:</b></td><td> Up to 2x E5-2600 Processors</td></tr>	<tr><td><b>Processor Cache:</b></td><td> Up to 12 MB L3</td></tr>	<tr><td><b>Memory:</b></td><td> Up to 512GB PC3L-10600 LRDIMM (16DIMM Slots) or Up to 256GB PC3-10600 ECC RDIMM	</td></tr>	<tr><td><b>Hard Drives:</b></td><td> Up to 2x 2.5" hot-plug SAS, SATA, or SSD drives</td></tr>	<tr><td><b>Internal Storage: </b></td><td> Up to 1 TB</td></tr>	<tr><td><b>I/O Slots:</b></td><td> 2</td></tr>	</tbody></table>');
+		}
+		/* tabSpecs for customizable workstations */
+		else if(productTitle.includes("Z420")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/z420.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> Z420</td></tr>		<tr><td><b>Product Type:</b></td><td> Workstation </td></tr>		<tr><td><b>Form Factor:</b></td><td> Rackable Minitower </td></tr>		<tr><td><b>Processors: </b></td><td> Up to Eight-Core Intel E5-2600 Series</td></tr>		<tr><td><b>Memory:</b></td><td> 8 DIMM slots, Up to 64 GB ECC unbuffered DDR3 1600 MHz; 4 channels per CPU</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 3x 3.5" SATA or SAS drives, Fourth drive available</td></tr>		<tr><td><b>Graphics:</b></td><td> Supports AMD FirePro and NVIDIA NVS, Quadro or Tesla </td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("Z620")){
+			$("#tabSpecs").html('<table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> Z620</td></tr>		<tr><td><b>Product Type:</b></td><td> Workstation </td></tr>		<tr><td><b>Form Factor:</b></td><td> Rackable Minitower </td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2xIntel E5-2600 Series Xeon processors</td></tr>		<tr><td><b>Memory:</b></td><td> Up to 192GB 1600MHz DDR3</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 3x 3.5" SATA or SAS drives</td></tr>		<tr><td><b>Graphics:</b></td><td> Supports AMD FirePro and NVIDIA NVS, Quadro or Tesla </td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("Z800")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/z800.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b>Brand:</b></td><td class="col-sm-8"> HP</td></tr>		<tr><td><b>Product Line:</b></td><td> Z800</td></tr>		<tr><td><b>Product Type:</b></td><td> Workstation </td></tr>		<tr><td><b>Form Factor:</b></td><td> Rackable Minitower </td></tr>		<tr><td><b>Processors: </b></td><td> Up to 2x Intel Xeon X5500 Series</td></tr>		<tr><td><b>Memory:</b></td><td> Up to 192GB PC3-8500R, up to 96GB PC3-10600R, up to 24GB PC3-10600E</td></tr>		<tr><td><b>Hard Drives:</b></td><td> Up to 4x 3.5" SATA or SAS drives, up to 5x with conversion kit</td></tr>		<tr><td><b>Internal Storage:</b></td><td> Up to 5 TB </td></tr>		<tr><td><b>I/O Slots:</b></td><td> 7 </td></tr>		<tr><td><b>Graphics:</b></td><td> Supports AMD FirePro and NVIDIA NVS, Quadro or Tesla </td></tr>	</tbody></table>');
+		}
+		else if(productTitle.includes("T3400")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/t3400.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> Precision</td></tr>		<tr><td><b> Product Type:</b></td><td> Workstation</td></tr>		<tr><td><b> Processors: </b></td><td>1x Intel Core 2 Extreme, Intel Core 2 Quad, or Intel Core 2 Duo</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 160GB</td></tr>		<tr><td><b> Memory:</b></td><td> Fully expandable up to 16 GB PC2-6400 ECC UDIMM, PC2-6400 Non-ECC UDIMM, PC2-5300 ECC UDIMM, or PC2-5300 Non-ECC DIMM.</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Chassis supports up to four internal SATA drives or three SAS drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 1.8TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>11 USB 2.0</td></tr>		<tr><td><b> Graphics: </b></td><td>Supports up to 2 PCI Express x16 Gen 2 graphics cards up to 300W and 76MB Graphics Memory</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("T3500")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/t3500.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> Precision</td></tr>		<tr><td><b> Product Type:</b></td><td> Workstation</td></tr>		<tr><td><b> Processors: </b></td><td>Up to Six-Core 5600 series</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 12MB</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 24GB PC3-10600R</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Chassis supports up to 4x SATA drives or 3x SAS drives (SAS drives require SAS 6/iR controller card)</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 8TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>11 USB 2.0</td></tr>		<tr><td><b> Graphics: </b></td><td>Support for 2 PCI Express® x16 Gen 2 graphics cards up to 150W. 2 to 8 monitor configurations depending on card(s) chosen</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("T7500")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/t7500.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> Precision</td></tr>		<tr><td><b> Product Type:</b></td><td> Workstation</td></tr>		<tr><td><b> Form Factor: </b></td><td>Minitower</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 2x Quad / Hex-Core Intel Xeon 55xx or 56xx Series Processors</td></tr>		<tr><td><b> Processor Cache:</b></td><td> 12MB</td></tr>		<tr><td><b> Memory:</b></td><td> Fully Expandable up to 192GB 1333MHz DDR3 ECC Registered DIMM memory</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 5 internal drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 10.0TB</td></tr>		<tr><td><b> Graphics: </b></td><td>Up to 2 Gen 2 PCIe x 16 Graphic Cards up to 225W</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("T630")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_workstation_specs/t630.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerEdge</td></tr>		<tr><td><b> Product Type:</b></td><td> Tower</td></tr>		<tr><td><b> Processors: </b></td><td>Up to 2x Intel Xeon E5-2600 v3 Series Processors</td></tr>		<tr><td><b> Processor Cache:</b></td><td> Up to 2.5MB per core: core options 4, 6, 8, 10, 12, 16, 18</td></tr>		<tr><td><b> Memory:</b></td><td> Up to 768GB PC3-17000R (24 DIMM Slots)</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 8x 3.5" SAS/SATA/SSD Drives<br>Up to 16x 2.5" SAS/SATA/SSD Drives<br>									Up to 18x 3.5" SAS/SATA/SSD Drives *With optional Flex Bay<br>Up to 32x 2.5" SAS/SATA/SSD Drives *With optional Flex Bay		</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 72TB</td></tr>		<tr><td><b> I/O Slots: </b></td><td>6 Integrated PCIe 3.0</td></tr>		<tr><td><b> Remote Management: </b></td><td>iDRAC8 Remote Access Card</td></tr>		</tbody></table>');
+		}
+		/* tabSpecs for customizable storage solutions */
+		else if(productTitle.includes("MD1200")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/md1200.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerVault</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Storage</td></tr>		<tr><td><b> Form Factor: </b></td><td>2U Rackmount</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 12 3.5” SAS hard drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 24TB</td></tr>		<tr><td><b> Adapter: </b></td><td>PERC H800 HostRAID</td></tr>		<tr><td><b> Expansion: </b></td><td>Up to 8 enclosures</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("MD1220")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/md1220.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerVault</td></tr>		<tr><td><b> Product Type:</b></td><td> Rackmount Storage</td></tr>		<tr><td><b> Form Factor: </b></td><td>2U Rackmount</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 24 2.5” SAS hard drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 12TB</td></tr>		<tr><td><b> Adapter: </b></td><td>PERC H800 HostRAID</td></tr>		<tr><td><b> Expansion: </b></td><td>Up to 8 enclosures</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("MD3220")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/md3220.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerVault</td></tr>		<tr><td><b> Product Type:</b></td><td> Storage Array</td></tr>		<tr><td><b> Form Factor: </b></td><td>2U Rackmount</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 24 2.5” SAS/SATA drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 12TB</td></tr>		<tr><td><b> Adapter: </b></td><td>PERC H200E</td></tr>		<tr><td><b> Expansion: </b></td><td>One x4 6Gb SAS</td></tr>		</tbody></table>');
+		}
+		else if(productTitle.includes("MD3220i")){
+			$("#tabSpecs").html('<div class="col-sm-12 specsDiv"><a href="http://www.stalliontek.com/stalliontek_server_specs/md3220i.pdf" class="btn-specs" target="_blank">View Specs Sheet</a></div><table class="table table-bordered table-striped">		<tbody><tr><td class="col-sm-4"><b> Brand:</b></td><td class="col-sm-8"> Dell</td></tr>		<tr><td><b> Product Line:</b></td><td> PowerVault</td></tr>		<tr><td><b> Product Type:</b></td><td> Storage Array</td></tr>		<tr><td><b> Form Factor: </b></td><td>2U Rackmount</td></tr>		<tr><td><b> Hard Drives:</b></td><td> Up to 24 2.5” SAS/SATA drives</td></tr>		<tr><td><b> Internal Storage: </b></td><td>Up to 12TB</td></tr>		<tr><td><b> Adapter: </b></td><td>PERC H200E</td></tr>		<tr><td><b> Expansion: </b></td><td>One x4 6Gb SAS</td></tr>		</tbody></table>');
+		}	
+	}
+	
+	$("#tabs-mid #tabDesc").html($('#tabs-left #tabDesc').html());
+	$("#tabs-mid #tabSpecs").html($('#tabs-left #tabSpecs').html());
+   });
+</script>
+
+<style>
+a.btn-specs {
+    color: #333333;
+    background-color: #ffb119;
+    font-size: 16px;
+    padding: 5px 20px;
+    display: inline-block;
+    line-height: 30px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+a.btn-specs:hover{background-color:#cb0000; color:#ffffff;text-decoration:none;}
+
+.specsDiv{text-align:center; padding: 0 0 15px 0;}
+
+body, select{color:#333333;}
+.product-collateral{
+	margin-top:20px;
+}
+.product-collateral .panel-title>a{
+	background-color:#ffffff;
+	color:#000000;
+	border: 1px solid #ddd;
+	border-radius:0;
+}
+.product-collateral .panel-title>a:after{
+	color: #000000;
+}
+.etalage-control{
+	display:none;
+}
+.product-options select{
+	border:none;
+	padding: 2px 0px;
+}
+.product-options dd{
+	padding:10px 20px;
+}
+.productBadge{
+	max-width:150px;
+}
+.product-options dt label.required em {
+	display:none;
+}
+.product-options dt label{
+	color:#ffffff;
+}
+#tabs-bottom{
+	display:none;
+}
+.no-rating{
+	display:none;
+}
+.product-view .product-info {
+	margin-top:0px;
+}
+.product-view .product-shop .short-description {
+	border-bottom:none;
+	padding-bottom:0px;
+}
+.col1-layout .product-view .product-options + div.clearer, .col1-layout .product-view .product-info + div.clearer{
+	border-bottom:none;
+}
+.product-view .add-to-links {
+	display:none;
+}
+.product-options-bottom + div.clearer, .add-to-box + div.clearer{
+	border: 1px solid #ddd;
+	background: url("https://www.stalliontek.com/media/productPage2.jpg") no-repeat; 
+	background-size:cover;
+}
+.product-options-bottom .price-box {
+	display:block;
+}
+.product-options-bottom .price-label{
+	display:none;
+}
+.col1-layout .product-options-bottom, .col1-layout .add-to-box{
+	float:right;
+}
+.product-options-bottom .add-to-cart, .add-to-box .add-to-cart {
+	float:right;
+	padding-right:20px;
+}
+.product-options-bottom .price-box .price{
+	float:right;
+	font-size:36px;
+	padding-right:20px;
+	padding-top:10px;
+	color:#ffffff;
+}
+.product-options-bottom .add-to-cart button.button span, .add-to-box .add-to-cart button.button span{
+	border-radius:0px;
+	background-color:#ffb119;
+	color:#333333;
+	font-weight:bold;
+}
+.product-options-bottom .add-to-cart button.button span span i{display:none;}
+.product-options-bottom.myOptBottom{float:left;padding-left:20px; width:auto;color:#ffffff;line-height:1.5;}
+.add-to-box{
+	margin-top:40px;
+}	
+.col1-layout .product-view .product-info{
+	width:100%;
+	float:none;
+}
+.product-info .price-as-configured{
+	display:none;
+}
+.product-view .product-info{
+	padding-bottom:0px;
+}
+.qty-changer{display:none;}
+.qty-holder{width:30px;}
+/*================= custom Info =================*/
+#bayInfo{
+	font-weight:bold;
+	color:#0073c6;
+}
+.infoBox{
+	background-color: #a8a8a8;
+	color:#000000;
+	padding:10px;
+	line-height:2.5;
+}
+.btn-bays{
+	display: inline-block;
+    height: 38px;
+    width: 160px;
+    min-width: 110px;
+    vertical-align: middle;
+	background-color:#0073c6;
+	margin-right:5px;
+	margin-top:5px;
+	border-bottom: 4px solid #003c66;
+	color:#ffffff;
+	
+}
+.btn-bays:hover{
+	background-color:#dddddd;
+	text-decoration:none;
+}
+.btn-bays span{
+	height: 38px;
+    line-height: 38px;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 0px 10px;
+    min-width: 110px;
+}
+.btn-bays span i{
+	float:right;
+	margin-right:10px;
+}
+#tabDesc a{
+	color:#0072c6;
+}
+.btn-reset{
+	border: none;
+    background: #0073c6;
+    margin-bottom: 25px;
+    width: 28%;
+	color:#ffffff;
+	line-height: 30px;
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 150px;
+}
+.btn-reset:hover{
+	background:#a8a8a8;
+}
+.product-view .product-shop .availability.in-stock span{color:#00b33b;}
+.product-options dt{background-color:#003c66;}
+.productPage1{
+	position:relative;
+	background: url(https://www.stalliontek.com/media/productPage1.jpg) no-repeat;
+    background-size: 100%;
+	text-align:center;
+	max-width:550px;
+	margin-top:15px;
+}
+.productPage1 div{   
+	padding:15px 0px;;
+	padding-left:0px;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: -0.8px;
+}
+.productPage1 span{padding-left:25px;}
+#tabs-mid{display:none;}
+.main-container{padding-bottom:0px;}
+.product-view .box-up-sell >h2{background:url('https://www.stalliontek.com/media/filterTitle.png') center no-repeat; text-align:center;}
+.product-view .box-up-sell >h2 span{padding-left:20px;}
+.product-info .minimal-price .price-label, .product-info .price-box-bundle .price {font-size:16px;}
+.product-info .condition {
+	margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #777;
+    font-weight: 600;
+}
+.condition span{font-weight:400; color:#333333;}
+.product-view .product-shop .product-info .price-box{margin-bottom:0px;}
+@media only screen and (max-width: 1709px){
+	.onepage-cat.category-list + .main.container{padding: 0 15px;}
+}
+@media only screen and (max-width:1199px){
+	.onepage-cat.category-list + .main.container{width:100%;}
+	.col1-layout .product-shop .product-options-bottom{float:right;border:none;}
+	.col1-layout .product-shop .product-options-bottom.myOptBottom{float:left;border:none;}
+	.product-options dt label{font-size:12px;}
+	.product-options dt{padding:10px 5px;}
+
+}
+@media only screen and (max-width:767px){
+	.col1-layout .product-shop .product-options-bottom{float:right;}
+	.col1-layout .product-shop .product-options-bottom.myOptBottom{float:left;}
+	.proBadgeRow{display:none;}
+	#tabs-left{display:none;}
+	#tabs-mid{display:block;}
+	.productPage1 span{padding-left:15px;}
+}
+@media only screen and (max-width:519px){
+	.col1-layout .product-shop .product-options-bottom{float:none;border:none;}
+	.product-options-bottom + div.clearer{display:none;}
+	.col1-layout .product-shop .product-options-bottom{    
+		background: #003c66;
+		background: -webkit-linear-gradient(#0072c6, #003c66);
+		background: -o-linear-gradient(#0072c6, #003c66);
+		background: -moz-linear-gradient(#0072c6, #003c66);
+		background: linear-gradient(#0072c6, #003c66);
+	}
+	.col1-layout .product-shop .product-options-bottom.myOptBottom{width:100%;}
+	.product-options-bottom .add-to-cart{padding-top:20px;}
+	.resetDiv{text-align:center;}
+	.btn-reset{margin-bottom:0px;background:#ffb119;color:#333333;}
+	.btn-reset:hover{background:#cb0000;color:#ffffff;}
+	.box-up-sell a.addtocart{font-size:12px; padding:5px 15px;}
+	.box-up-sell .product-name a{height:72px;}
+	.productPage1 div{
+		padding:3% 0px;font-size: 3vw;
+	}
+}
+</style>

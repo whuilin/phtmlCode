@@ -1,0 +1,36 @@
+CMS PAGE:
+RFQ
+stallion-rfq
+Request for Quote
+
+<div id="contact-form">
+<div class="row">
+<div class="col-sm-6 form-list" style="float:none; margin:auto;">
+{{block type="core/template" template="custom/stalliontek_rfq.phtml"}}
+</div>
+</div>
+</div>
+
+CMS PAGE:
+Your Quote
+rfq-handler
+
+<div id="printRFQ" style="width:600px;margin:auto;">
+	{{block type="core/template" template="custom/rfq-handler.phtml"}}
+
+	<div style="text-align:center;padding-top:15px;">
+		<button class="button" onclick="printQuote()">
+			<span><span>Print Quotation</span></span>
+		</button>
+	</div>
+</div>	
+
+<script>
+    function printQuote() {
+      var divToPrint = document.getElementById('rfqTable');
+      newWin = window.open("");
+      newWin.document.write(divToPrint.outerHTML);
+      newWin.print();
+      newWin.close();
+   }
+</script>

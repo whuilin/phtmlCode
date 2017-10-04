@@ -1,0 +1,836 @@
+<?php echo $this->getChildHtml('sticky.nav') ?>
+<?php
+    $store = Mage::app()->getStore();
+    $code  = $store->getCode();
+    $custom_block = Mage::getStoreConfig('porto_settings/header/static_block', $code);
+?>
+<style>
+#search_mini_form>.form-search{
+	width:370px;
+	min-width:220px;
+}
+.header-container.type15 .header .mini-cart {
+	height:40px;
+	border-radius:0px;
+}
+.header-container.type15 .mini-cart .mybag-link {
+	box-shadow:none;
+	background-color:transparent;
+	padding-top:10px;
+}
+.header-container.type15,.header-container>.header.container {
+	border:none;
+}
+a .icon-down-open,a .icon-up-open{
+	color:#333333;	
+}
+a:hover .icon-up-open{
+	color:#0073c6;
+}
+a .icon-down-open, a:hover .icon-up-open{
+	display: inline-block;
+}
+a .icon-up-open, a:hover .icon-down-open{
+	display:none;
+}
+/* Grow */
+.hvr-grow {
+  vertical-align: middle;
+  -webkit-transform: perspective(1px) translateZ(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px transparent;
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: transform;
+  transition-property: transform;
+}
+.hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+.header-container.type15 .links a, .header-container.type15.sticky-header a {
+	color:#333333;
+}
+.dropdown-menu {
+    height:45px;
+    list-style:none;
+    width: 75%; /******* MODIFIED ********/
+    margin: 5px 0 0 0;
+	padding: 0px;
+}
+.dropdown-menu li {
+    height: 45px;
+    margin: 0;
+    background-color: #ffffff;
+    display: inline-block;
+    float: left;
+    clear:both;
+    width: 100%;  /******* MODIFIED ********/
+	border-left: solid 1px #ccc;
+	border-right: solid 1px #ccc;
+	border-bottom: 1px solid #dddddd;
+}
+.dropdown-menu li:not(.myDivider):hover>a .menuText{
+      color:#0073c6;
+}
+.dropdown-menu li a {
+    font-family:Calibri, Arial;
+    font-size:18px;
+    font-weight:bold;
+    color:#ffffff;
+    text-decoration:none;
+	padding: 0px 0px;
+	
+}
+
+.dropdown-menu>li>a:focus, .dropdown-menu>li>a:hover, .dropdown-menu>li>a:active{  
+ text-decoration: none;
+ background-color:transparent;
+ background-image:none;
+} 
+
+.dropdown-menu li.current {
+    background-color:#EF6B00;
+}
+.dropdown-menu li.current a {
+    color:#FFFFFF;
+}
+dropdown-menu ul li ul {
+    display:none;
+    list-style-type:none;
+    width:125px;
+    padding:0px;
+    margin-top:3px;
+    margin-left:-5px;
+}
+dropdown-menu ul li:hover ul {
+    display:block;
+}
+dropdown-menu ul li:hover ul li {
+    background-color:#555555;
+    width:125px;
+    height:30px;
+    display:inline-block;
+}
+dropdown-menu ul li ul li:hover {
+    background-color:#333333;
+}
+dropdown-menu ul li ul li a {
+    color:#FFF;
+    text-decoration:underline;
+}
+dropdown-menu ul li ul li a:hover {
+    text-decoration:none;
+}
+
+.dropdown-menu li div {
+    display: none;
+	margin-top: 0px;
+}
+.dropdown-menu li:hover div {
+    display: block;
+}
+.menuText{
+	display: inline-block; vertical-align:middle;padding-left:10px; padding-top:5px;color:#333333;
+}
+.mobileMenuText{
+	display: inline-block; vertical-align:middle;padding-left:10px; padding-top:10px; color:#ffffff;
+}
+.dropdown-menu li:hover .sub-menu
+{
+    position: relative;   
+    margin-top: -5px;
+	margin-left:29px;
+	left:100%;
+	width: 100%;
+}
+
+.sub-menu div
+{
+    position: relative;
+    display: block;
+    top: 0;
+    min-width: 210px;
+    white-space: nowrap;
+    z-index:1;
+	background-color:#ffffff;
+	font-size:18px;
+	border-right:1px solid #ddd;
+}
+a:hover .serverSubDiv,.header-container.type15.sticky-header a:hover .serverSubDiv{
+	color:#0073c6;
+}
+.header-container.type15.sticky-header a .serverSubDiv{
+	color:#333333;
+}
+.serverSubDiv{
+	padding: 11px 15px;
+	font-size:18px;
+	border-bottom:1px solid #dddddd;
+}
+
+.mobileCateMenu{
+	position:absolute; 
+	top: 60px;
+	padding:12px 2px;
+	width:50px;
+	height:50px;
+	background: url("https://www.stalliontek.com/media/menuIcon.png") no-repeat;
+	background-size: 50px 50px;
+	display:none;	
+}
+.mobileMenu{
+	width:100%;
+	display:none;
+	z-index:6;
+}
+.mobileMenuItem{
+	height:38px;
+	background-color:#333333;
+	font-size:16px;
+	padding:0px 20px;
+	color:#ffffff;
+	border: solid 1px #dddddd;
+	text-align:left;
+
+}
+.mobileMenuItem:hover{
+	background-color:#ffb119;
+	color:#333333;
+}
+.mobileMenu a:hover{text-decoration:none;}
+.mobileSubMenuItem{
+	height:38px;
+	background-color:#003c66;
+	font-size:14px;
+	padding:11px 20px;
+	color:#ffffff;
+	border: solid 1px #dddddd;
+	text-align:center;
+
+}
+.mobileSubMenuItem:hover{
+	background-color:#ffb119;
+	text-decoration:none;
+}
+
+ul.links li:hover > ul.dropdown-menu {
+    display: block;
+  }
+  
+a[aria-expanded=true] .fa-caret-down {
+   display: none;
+}
+a[aria-expanded=false] .fa-caret-up {
+   display: none;
+}
+.header-container>.header.container{
+	/* border-bottom: thick solid #EF6b00;*/
+}
+.sticky-header>.header.container{
+	border-bottom:none;
+}
+.headerLine2{
+	padding: 0px 50px; color:#000000; text-align:center;
+    background: #edf7ff;
+    background: -webkit-linear-gradient(#d9e1e7, #eff8ff, #edf7ff);
+    background: -o-linear-gradient(#d9e1e7, #eff8ff, #edf7ff);
+    background: -moz-linear-gradient(#d9e1e7, #eff8ff, #edf7ff);
+    background: linear-gradient(#d9e1e7, #eff8ff, #edf7ff);
+}
+.header-container.type15 .header .form-search #search, .header-container.type15 .header .form-search button.button,
+.header-container.type15.sticky-header .header .form-search #search, .header-container.type15.sticky-header .header .form-search,
+.header-container.type15.sticky-header .header .form-search button.button{
+	color:#dddddd;
+}
+.header-container.type15 .header .form-search, .header-container.type15.sticky-header .header .form-search{
+	border-color:#dddddd;
+}
+.header-container.type15 .mini-products-list .product-name a{
+	height:72px;
+	color:#333333;
+}
+.links>li>a:hover{
+	text-decoration:none;
+}
+.header-container.type15 .links>li>a, .header-container.type15.sticky-header .links>li>a  {
+	color:#333333;
+	font-size:16px;
+}
+.header-container.type15 .links>li>a:hover, .header-container.type15.sticky-header .links>li>a:hover  {
+	color:#0073c6;
+}
+.header-container.type15 .header .mini-cart .topCartContent {
+	z-index:4;
+}
+.header-container.type15 .header .mini-cart {
+	background-color:#0073c6;
+}
+.header-container.type15 .mybag-link .cart-info, .header-container.type15 .mybag-link i{
+	color:#ffffff;
+}
+.headerLine1{
+	height:40px;
+	padding: 0px 50px; color:#ffffff;background-color:#333333;
+}
+ .header-container.type15.sticky-header .headerLine1 a{
+	 color:#ffffff;
+}
+.headerLine2 a,.header-container.type15.sticky-header .headerLine2 a{ color:#003c66;}
+#productMenu>li>a>i{
+	font-size:12px;
+	float:right;
+	padding-top:8px;
+	color:#333333;
+}
+#productMenu>li:hover>a>i{
+	color:#0073c6;
+}
+.serverSubDiv i{
+	font-size:12px;
+	float:right;
+	padding-top:0px;
+}
+.header-container.type15 .header > .logo{margin-left:50px;}
+.topRightDiv{display:inline-block;vertical-align:top;position:relative;}
+.topRightImg{display:inline-block; margin-left:-3px;}
+.topRightTxt{display:none;}
+.cart-area{margin-top:-30px; z-index:3; right:50px}
+.headerLine3{
+	display:none;
+	border-top: 1px solid #dddddd;
+}
+.header-container.type15.sticky-header{background-color:transparent;}
+.header-container>.header.container{background:#ffffff;}
+.header-container.sticky-header>.header.container{background:transparent;}
+.header-container.type15 .header > .logo{margin-top:5px;margin-bottom:5px;}
+
+.slopeBorder{display:none;}
+.stickyMobileLogo{display:none;}
+.mobileSearch{display:none; padding-top:126px;}
+@media (max-width: 1439px){
+	.header-container.type15 .links>li>a, .header-container.type15.sticky-header .links>li>a  {
+		font-size:11px;
+	}
+	.header-container.type15 .links li a, .header-container.type15.sticky-header .links li a  {
+		color:#333333;
+		font-weight:bold;
+	}
+	.header-container.type15 .top-links-icon{display:none;}	
+	.header-container.type15 .header > .logo{margin-left:0px;}
+}
+@media (max-width: 799px){
+	.headerLine2 i{display:none;}
+}
+@media only screen and (min-width: 1440px){
+	.search-area{margin-left:50px;}
+	
+	.dropdown-menu li{
+		min-width:175px;
+	}
+	.serverDiv{
+		width:180px;margin-left:0px;
+	}
+	.serverSubDiv{
+		text-align:left;
+	}
+	.mobileMenu{
+		display:none;margin-top:-9999px;
+	}
+	#dropdownCS{
+		left:160px; width:auto;
+	}
+}
+@media only screen and (min-width:768px) and (max-width:1439px){
+	.headerLine1, .headerLine2{padding:0px; padding-left:5px;}
+	.headerLine2 .fa-external-link{display:none;}
+
+	
+	#search_mini_form>.form-search{width:100%;}
+	.search-area{margin-left:0px;}
+	.dropdown-menu li a,.sub-menu div{font-size:14px;}
+	.dropdown-menu{top:20px;}
+	.serverDiv{margin-left:15px;}
+	#dropdownCS{left:120px;}
+	
+	.dropdown-menu li:hover .sub-menu{
+		margin-left:0px;
+	}
+	.mobileMenu{display:none;margin-top:-9999px;}
+}
+
+@media only screen and (max-width:767px){
+	.headerLine2{display:none;}
+	.headerLine1{padding:0px 0px 0px 5px;}
+	.hideLess768{display:none;}
+	.header-container.type15 .headerLine1 .switcher-area{display:none;}
+	.header-container.type15 .cart-area .top-links-area{display:none;}
+	.header-container.type15 .cart-area{margin-top:15px;right:30px;}
+	#search_mini_form>.form-search{width:300px;}
+	
+	.headerLine3{display:block; padding-left:5px;padding-right:0px;}
+	.header-container.type15 .headerLine3{margin-top:88px;}
+	.header-container.type15.sticky-header .headerLine3{margin-top:86px;}
+	.header-container.type15 .headerLine3 .links>li>a, .header-container.type15.sticky-header .headerLine3 .links>li>a  {
+		font-size:14px;
+	}
+	.headerLine3 #productMenu{width:200px;top:28px;}
+	.headerLine3 #dropdownCS{width:200px;top:28px;left:160px;}
+	.mobileMenu{display:none;margin-top:-9999px;}
+}
+@media only screen and (max-width:579px){
+	.mobileCateMenu{display:inline-block;right:15px;}
+	.mobileMenu{padding-top:126px;margin-top:0px;}
+	.sticky-header+.mobileMenu{padding-top:126px;margin-top:0px;}
+	.headerLine1 .topRightDiv{display:none;}
+	.headerLine1 .contact{display:none;}
+	.header-container.type15 .headerLine1 .switcher-area{display:block;}
+	
+	.header-container.type15 .cart-area{display:none;}
+	.headerLine3{display:none;}
+	.topRightTxt{display:inline-block;}
+	
+	.slopeBorder{display:block;position:absolute;border-left:40px solid transparent; border-bottom:70px solid #0073c6;margin-left:-22px;margin-top:-43px;}
+	.headerLine1{text-align:center;}
+	.header-container.type15.sticky-header .header .headerLine1{padding:0px;}
+	.header-container.type15.sticky-header .header .leftLinks{display:none;}
+	.header-container.type15.sticky-header .header .stickyMobileLogo{display:block;}
+	.mobileSearch{display:block;}
+	#search_mini_form>.form-search{width:100%;}
+	.mobileSearch .search-area{
+		position:relative;
+		display:block;
+		width:100%;
+		left:0;
+		margin-top:0px;
+		padding:10px 15px;
+		height:auto;
+	}
+	.mobileSearch label{display:none;}
+	.mobileSearch .form-search{border:1px solid #777;}
+	.mobileSearch #search{border:1px solid #333333;height:38px;width:100%;}
+	.mobileSearch button.button{width:40px; height:38px; font-size:14px;position:absolute;right:15px;top:10px;}
+}
+
+.sticky-header h1, .sticky-header .mobileCateMenu, .sticky-header .cart-area, .sticky-header .headerLine2, .sticky-header .headerLine3{display:none;}
+.header-container.type15.sticky-header .header > .logo img.sticky-logo-image{display:none;}
+	</style>
+
+<script type="text/javascript">
+ jQuery(function($){
+	$(document).ready(function(){
+			$(".mobileCateMenu").click(function(){
+			if($('.mobileMenu').css('display') == 'block'){
+				
+				$(".mobileSearch").css("padding-top","126px");
+				$(".mobileMenu").slideUp(300,  function(){
+					
+				});
+			
+			} else {
+				$(".mobileSearch").css("padding-top","0px");
+				$(".mobileMenu").slideDown(300);
+
+			}
+		});
+	});
+	
+	$(".mobileSearch #search").attr('placeholder','Search...');
+	
+	$(window).resize(function() {
+		if($(window).width() >=580){ 
+			$('.mobileMenu').css("display", "none");
+		}
+	});
+	
+});		
+</script>
+	
+<div class="header-container type15" >
+<!--added 20170711 for new design @Huilin Wang-->
+<div class="header container" style="padding: 0px;">
+	<div class="col-sm-12 headerLine1">
+		<div class="pull-left leftLinks" style="padding:13px 0px;">
+			<a href="#"  onclick="if ($zoho) {
+                  var $zs = $zoho.salesiq || $zoho.livedesk;
+                  $zs.floatwindow.visible('show');
+                  $zs.visitor.question(&quot; Customer Service &quot;);
+                  $zs.chat.start();
+                 }
+                 return false;"><i class="fa fa-comments"></i> Live Chat</a> &nbsp; &nbsp; 
+			<a href="https://www.stalliontek.com/contact" class="contact"><i class="fa fa-envelope-o"></i> Contact Us</a>	
+		</div>
+		<div class="pull-left stickyMobileLogo">
+			<a href="https://www.stalliontek.com/"><img src="https://www.stalliontek.com/media/stickyMobileLogo.png"></a>
+		</div>
+		<div class="topRightTxt" style="padding:13px 0px;">		
+			<a href="tel:18447605565"><i class="fa fa-phone"></i> Call Now</a>	
+		</div>
+		<div class="pull-right" style="text-align:right;padding-right:0px;">		 
+			 <a href="https://www.stalliontek.com/customer/account/" title="My Account" class="hideLess768"><i class="fa fa-user"></i> Login</a>
+			 <div class="switcher-area">
+				<div class="slopeBorder">&nbsp;</div>
+                <?php
+                    $store_currency = $this->getChildHtml('store_currency');
+                    $store_language = $this->getChildHtml('store_language');
+                ?>
+                <?php echo $store_currency; ?>
+                <?php echo $store_language; ?>
+				<?php echo $this->getChildHtml('compare_link'); ?>
+                <?php echo $this->getChildHtml('minicart'); ?>
+            </div>			
+			<div class="topRightDiv">
+				<img src="https://www.stalliontek.com/media/homeNewTopRight.jpg" class="topRightImg">
+				<span style="color:#333333;position:absolute;top:15px;left:15px;font-size:15px;letter-spacing:-0.8px;font-weight:bold;">
+					For Support & Sales - Call Us:
+					<span style="padding-left:30px;color:#ffffff;letter-spacing:0.5px;">1-844-760-5565</span>
+				<span>
+			</div>
+		</div>
+		
+	</div>
+	
+	    <?php if ($this->getIsHomePage()):?>
+        <h1 class="logo" style="padding:0px;margin-top:5px;margin-bottom:5px;"><strong><?php echo $this->getLogoAlt(); ?></strong><a href="<?php echo $this->getUrl(''); ?>" title="<?php echo $this->getLogoAlt(); ?>" class="logo"><img src="<?php echo $this->getLogoSrc(); ?>" alt="<?php echo $this->getLogoAlt(); ?>" /></a></h1>
+        <?php else:?>
+        <a href="<?php echo $this->getUrl(''); ?>" title="<?php echo $this->getLogoAlt(); ?>" class="logo"><strong><?php echo $this->getLogoAlt(); ?></strong><img src="<?php echo $this->getLogoSrc(); ?>" alt="<?php echo $this->getLogoAlt(); ?>" /></a>
+        <?php endif; ?>
+	
+		<div class="mobileCateMenu"></div>
+		
+		<div class="cart-area">
+            <div class="top-links-area" style="margin-top:20px">
+              <div class="top-links-icon" style="width:50px; height:50px; background: url('https://www.stalliontek.com/media/menuIcon.png') no-repeat; background-size: 50px 50px; margin-right:10px;"><a style="color:#ffffff;" href="javascript:void(0)">
+			 
+			  </a></div>
+            
+				<ul class="links" style="z-index:1;">
+                    <li class="first">
+						<!--<a href="#" title="All Products">SHOP ALL PRODUCTS</a>-->
+						<a style="padding-bottom:10px;" href="" class="dropdown-toggle" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" style="padding-bottom:15px;">
+							Shop All Products<i class="icon-down-open"></i><i class="icon-up-open"></i>
+						</a> 
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="productMenu">
+				<li style="border-top:4px solid #0073c6;background-color:#dddddd;"><a href="https://www.stalliontek.com/used-refurbished-servers"><span class="menuText">SERVERS</span></a>
+				</li>
+				<li><a href="https://www.stalliontek.com/used-servers-cheap/hp-servers"><span class="menuText">HP SERVERS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc;">						
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-1u-servers"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">HP 1U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-2u-servers"><div class="col-sm-12 serverSubDiv">HP 2U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-3u-servers"><div class="col-sm-12 serverSubDiv">HP 3U+</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-blades"><div class="col-sm-12 serverSubDiv">HP Blades</div></a>						
+							</div>			
+						</div>												
+					</div>
+				</li>
+				<li style="border-bottom: solid 4px #dddddd;"><a href="https://www.stalliontek.com/used-servers-cheap/dell-servers"><span class="menuText">Dell SERVERS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc">							
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-1u-servers"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">DELL 1U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-2u-servers"><div class="col-sm-12 serverSubDiv">DELL 2U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-3u-servers"><div class="col-sm-12 serverSubDiv">DELL 3U+</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-blades"><div class="col-sm-12 serverSubDiv">DELL Blades</div></a>	
+							</div>							
+											
+						</div>												
+					</div>
+				</li>
+				<li><a href="https://www.stalliontek.com/desktops-and-workstations"><span class="menuText">WORKSTATIONS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc">							
+							<a href="https://www.stalliontek.com/desktops-and-workstations/hp-workstations"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">HP Workstations</div></a>
+							<a href="https://www.stalliontek.com/desktops-and-workstations/dell-workstations"><div class="col-sm-12 serverSubDiv">Dell Workstations</div></a>
+							<a href="https://www.stalliontek.com/desktops-and-workstations/lenovo-workstations"><div class="col-sm-12 serverSubDiv">Lenovo Workstations</div></a>
+							</div>																		
+						</div>												
+					</div>
+				</li>
+				<li><a href="https://www.stalliontek.com/systems"><span class="menuText">ELECTRONICS</span></a></li>
+				<li><a href="https://www.stalliontek.com/used-refurbished-servers/servers/storage-solutions"><span class="menuText">STORAGE</span></a></li>
+				<li style="height:30px; border-left:solid 1px #ccc; border-right: solid 1px #ccc;background-color:#dddddd;" class="myDivider"><span class="menuText" style="text-align:center; color:#000000;">Components</span></li>
+				<li><a href="https://www.stalliontek.com/refurbished-server-hard-drives"><span class="menuText">HARD DRIVES</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-memory"><span class="menuText">MEMORY</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-cpu-processors"><span class="menuText">PROCESSORS</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-parts-components"><span class="menuText">PARTS</span></a></li>			
+			</ul>											
+					</li>
+					<li>
+						<a href="#" title="Customer Service" class="dropdown-toggle" id="dropdownMenuLinkCS"  aria-haspopup="true" aria-expanded="false" style="padding-bottom:15px;">Service
+						<i class="icon-down-open"></i><i class="icon-up-open"></i></a>
+						<ul class="dropdown-menu" aria-labelledby="dropdownMenuLinkCS" id="dropdownCS">
+						<li style="border:solid 1px #ccc;">
+							<a href="#"  onclick="if ($zoho) {
+                  var $zs = $zoho.salesiq || $zoho.livedesk;
+                  $zs.floatwindow.visible('show');
+                  $zs.visitor.question(&quot; Customer Service &quot;);
+                  $zs.chat.start();
+                 }
+                 return false;">
+								<span class="menuText"><i class="fa fa-comments"></i> &nbsp; Chat with Us</span>
+							</a>
+						</li>
+						<li style="border-left:solid 1px #ccc; border-right: solid 1px #ccc;">
+							<a href="https://www.stalliontek.com/contact">
+								<span class="menuText"><i class="fa fa-envelope"></i> &nbsp; Contact Us</span>
+							</a>
+						</li>
+						<li class="myDivider" style="border:solid 1px #ccc; border-top: none;">
+							<a>
+								<span class="menuText"><i class="fa fa-phone"></i> &nbsp; 1-844-760-5565</span>
+							</a>
+						</li>
+				
+			</ul>
+					</li>
+					
+
+					
+               </ul>        
+            </div>
+			
+            <div class="search-area">
+                <a href="javascript:void(0)" class="search-icon" style="color:#ffffff;display:none;"><i class="icon-search"></i></a>
+                <?php echo $this->getChildHtml('topSearch'); ?>
+            </div>
+            <div class="menu-icon"><a href="javascript:void(0)" title="<?php echo $this->__('Menu'); ?>"><i class="fa fa-bars"></i></a></div>
+            <!-- **switcher-area** -->
+			
+
+        </div>
+		<?php echo $this->getChildHtml("demo_header_tooltip"); ?>
+	
+		<div class="col-sm-12 headerLine2">
+			<div style="padding:15px 0px; margin:auto; font-size:12px; font-weight:bold;">
+				<a href="https://www.stalliontek.com/price-match"><i class="fa fa-tags fa-lg"></i> LOWEST PRICE GUARANTEED <i class="fa fa-external-link"></i></a>&nbsp; &nbsp; 
+				<a href="https://www.stalliontek.com/shipping"><i class="fa fa-truck fa-lg"></i> SAME DAY, FREE SHIPPING <i class="fa fa-external-link"></i></a>&nbsp; &nbsp;  
+				<a href="https://www.stalliontek.com/about-stalliontek/#warr"><i class="fa fa-star fa-lg"></i> SATISFACTION GUARANTEED <i class="fa fa-external-link"></i></a>&nbsp; &nbsp;
+				<a href="https://www.stalliontek.com/stallion-certified"><i class="fa fa-trophy fa-lg"></i> STALLIONTEK CERTIFIED <i class="fa fa-external-link"></i></a> 
+			</div>	 
+		</div>
+		<div class="col-sm-12 headerLine3">
+			<ul class="links" style="z-index:1; float:left;padding-top:8px;">
+                    <li class="first">
+						<!--<a href="#" title="All Products">SHOP ALL PRODUCTS</a>-->
+						<a style="padding-bottom:10px;" href="" class="dropdown-toggle" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false">
+							Shop All Products<i class="icon-down-open"></i><i class="icon-up-open"></i>
+						</a> 
+			<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink" id="productMenu">
+				<li style="border-top:4px solid #0073c6;background-color:#dddddd;"><a href="https://www.stalliontek.com/used-refurbished-servers"><span class="menuText">SERVERS</span></a>
+				</li>
+				<li><a href="https://www.stalliontek.com/used-servers-cheap/hp-servers"><span class="menuText">HP SERVERS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc;">						
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-1u-servers"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">HP 1U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-2u-servers"><div class="col-sm-12 serverSubDiv">HP 2U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-3u-servers"><div class="col-sm-12 serverSubDiv">HP 3U+</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-blades"><div class="col-sm-12 serverSubDiv">HP Blades</div></a>						
+							</div>			
+						</div>												
+					</div>
+				</li>
+				<li style="border-bottom: solid 4px #dddddd;"><a href="https://www.stalliontek.com/used-servers-cheap/dell-servers"><span class="menuText">Dell SERVERS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc">							
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-1u-servers"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">DELL 1U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-2u-servers"><div class="col-sm-12 serverSubDiv">DELL 2U</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-3u-servers"><div class="col-sm-12 serverSubDiv">DELL 3U+</div></a>
+							<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-blades"><div class="col-sm-12 serverSubDiv">DELL Blades</div></a>	
+							</div>																		
+						</div>												
+					</div>
+				</li>
+				<li><a href="https://www.stalliontek.com/desktops-and-workstations"><span class="menuText">WORKSTATIONS</span><i class="icon-right-open"></i></a>
+					<div class="sub-menu">			
+						<div class="serverDiv">
+							<div class="col-sm-12" style="margin-top:-30px; margin-left:-15px;padding-left:0px; padding-right:0px; border: solid 1px #ccc">							
+							<a href="https://www.stalliontek.com/desktops-and-workstations/hp-workstations"><div class="col-sm-12 serverSubDiv" style="border-top:3px solid #0073c6;">HP Workstations</div></a>
+							<a href="https://www.stalliontek.com/desktops-and-workstations/dell-workstations"><div class="col-sm-12 serverSubDiv">Dell Workstations</div></a>
+							<a href="https://www.stalliontek.com/desktops-and-workstations/lenovo-workstations"><div class="col-sm-12 serverSubDiv">Lenovo Workstations</div></a>
+							</div>																		
+						</div>												
+					</div>
+				</li>
+				<li><a href="https://www.stalliontek.com/systems"><span class="menuText">ELECTRONICS</span></a></li>
+				<li><a href="https://www.stalliontek.com/used-refurbished-servers/servers/storage-solutions"><span class="menuText">STORAGE</span></a></li>
+				<li style="height:30px; border-left:solid 1px #ccc; border-right: solid 1px #ccc;background-color:#dddddd;" class="myDivider"><span class="menuText" style="text-align:center; color:#000000;">Components</span></li>
+				<li><a href="https://www.stalliontek.com/refurbished-server-hard-drives"><span class="menuText">HARD DRIVES</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-memory"><span class="menuText">MEMORY</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-cpu-processors"><span class="menuText">PROCESSORS</span></a></li>
+				<li><a href="https://www.stalliontek.com/server-parts-components"><span class="menuText">PARTS</span></a></li>			
+			</ul>											
+					</li>
+					<li>
+						<a href="#" title="Customer Service" class="dropdown-toggle" id="dropdownMenuLinkCS" aria-haspopup="true" aria-expanded="false" style="padding-bottom:15px;">Service
+						<i class="icon-down-open"></i><i class="icon-up-open"></i></a>
+						<ul class="dropdown-menu" aria-labelledby="dropdownMenuLinkCS" id="dropdownCS">
+						<li style="border:solid 1px #ccc;">
+							<a href="#" onclick="if ($zoho) {
+                  var $zs = $zoho.salesiq || $zoho.livedesk;
+                  $zs.floatwindow.visible('show');
+                  $zs.visitor.question(&quot; Customer Service &quot;);
+                  $zs.chat.start();
+                 }
+                 return false;">
+								<span class="menuText"><i class="fa fa-comments"></i> &nbsp; Chat with Us</span>
+							</a>
+						</li>
+						<li style="border-left:solid 1px #ccc; border-right: solid 1px #ccc;">
+							<a href="https://www.stalliontek.com/contact">
+								<span class="menuText"><i class="fa fa-envelope"></i> &nbsp; Contact Us</span>
+							</a>
+						</li>
+						<li class="myDivider" style="border:solid 1px #ccc; border-top: none;">
+							<a>
+								<span class="menuText"><i class="fa fa-phone"></i> &nbsp; 1-844-760-5565</span>
+							</a>
+						</li>
+				
+			</ul>
+					</li>
+					<li>
+						<a href="https://www.stalliontek.com/customer/account/" title="Account" style="padding-bottom:15px;">Account
+						<i class="icon-down-open"></i><i class="icon-up-open"></i></a>
+					</li>
+					
+               </ul>
+			<div class="switcher-area" style="float:right;">
+                <?php
+                    $store_currency = $this->getChildHtml('store_currency');
+                    $store_language = $this->getChildHtml('store_language');
+                ?>
+                <?php echo $store_currency; ?>
+                <?php echo $store_language; ?>
+				<?php echo $this->getChildHtml('compare_link'); ?>
+                <?php echo $this->getChildHtml('minicart'); ?>
+            </div>	
+		</div>
+</div>
+</div>
+
+<div class="mobileMenu">
+	<div class="row">
+		<div class="col-sm-12">								
+				<a data-toggle="collapse" data-target="#mobileServers" aria-expanded="false" aria-controls="mobileServers" style="cursor:pointer">
+					<div class="col-sm-12 mobileMenuItem">					
+						<span class="mobileMenuText">Servers <i class="fa fa-caret-down"></i><i class="fa fa-caret-up"></i></span>
+					</div>
+				</a>			
+
+<div class="collapse" id="mobileServers" style="z-index:6;">
+		<a href="https://www.stalliontek.com/used-servers-cheap">
+			<div class="col-sm-12 mobileSubMenuItem" style="font-size:16px;">	
+			All Servers</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-refurbished-servers/servers/hp-servers">
+			<div class="col-sm-12 mobileSubMenuItem" style="font-size:16px;">	
+			HP Servers</div>
+		</a>	
+		<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-1u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			HP 1U</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-2u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			HP 2U</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-3u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			HP 3U+</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/hp-servers/hp-blades">
+			<div class="col-sm-12 mobileSubMenuItem">
+			HP Blades</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-refurbished-servers/servers/dell-servers">
+			<div class="col-sm-12 mobileSubMenuItem" style="font-size:16px;">
+			Dell Servers</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-1u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			Dell 1U</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-2u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			Dell 2U</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-3u-servers">
+			<div class="col-sm-12 mobileSubMenuItem">
+			Dell 3U+</div>
+		</a>
+		<a href="https://www.stalliontek.com/used-servers-cheap/dell-servers/dell-blades">
+		<div class="col-sm-12 mobileSubMenuItem">
+			Dell Blades</div>
+		</a>
+</div>
+		<a data-toggle="collapse" data-target="#mobileWS" aria-expanded="false" aria-controls="mobileWS" style="cursor:pointer">
+			<div class="col-sm-12 mobileMenuItem">					
+				<span class="mobileMenuText">Workstations <i class="fa fa-caret-down"></i><i class="fa fa-caret-up"></i></span>
+			</div>
+		</a>
+<div class="collapse" id="mobileWS" style="z-index:6;">
+		<a href="https://www.stalliontek.com/desktops-and-workstations">
+			<div class="col-sm-12 mobileSubMenuItem">	
+			All Workstations</div>
+		</a>
+		<a href="https://www.stalliontek.com/desktops-and-workstations/hp-workstations">
+			<div class="col-sm-12 mobileSubMenuItem">	
+			HP Workstations</div>
+		</a>	
+		<a href="https://www.stalliontek.com/desktops-and-workstations/dell-workstations">
+			<div class="col-sm-12 mobileSubMenuItem">
+			Dell Workstations</div>
+		</a>
+		<a href="https://www.stalliontek.com/desktops-and-workstations/lenovo-workstations">
+			<div class="col-sm-12 mobileSubMenuItem">
+			Lenovo Workstations</div>
+		</a>		
+</div>
+				
+		<a href="https://www.stalliontek.com/systems">
+			<div class="col-sm-12 mobileMenuItem">	
+				<span class="mobileMenuText">Electronics</span>
+			</div>			
+		</a>
+		<a href="https://www.stalliontek.com/used-refurbished-servers/servers/storage-solutions">
+			<div class="col-sm-12 mobileMenuItem">	
+				<span class="mobileMenuText">Storage</span>
+			</div>
+		</a>
+		<a href="https://www.stalliontek.com/refurbished-server-hard-drives">
+			<div class="col-sm-12 mobileMenuItem">
+				<span class="mobileMenuText">Hard Drives</span>
+			</div>
+		</a>	
+		<a href="https://www.stalliontek.com/server-memory">
+			<div class="col-sm-12 mobileMenuItem">
+				<span class="mobileMenuText">Memory</span>
+			</div>
+		</a>
+		<a href="https://www.stalliontek.com/server-cpu-processors">
+			<div class="col-sm-12 mobileMenuItem">
+				<span class="mobileMenuText">Processors</span>
+			</div>
+		</a>
+		<a href="https://www.stalliontek.com/server-parts-components">
+			<div class="col-sm-12 mobileMenuItem">
+				<span class="mobileMenuText">Parts</span>
+			</div>	
+		</a>
+		
+		</div>	
+	</div>
+</div>
+<div class="mobileSearch">
+	<div class="search-area">
+        <a href="javascript:void(0)" class="search-icon" style="color:#ffffff;display:none;"><i class="icon-search"></i></a>
+        <?php echo $this->getChildHtml('topSearch'); ?>
+    </div>
+</div>	
+
+

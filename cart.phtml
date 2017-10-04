@@ -1,0 +1,386 @@
+<?php
+/**
+ * Shopping cart template
+ *
+ * @see Mage_Checkout_Block_Cart
+ */
+?>
+
+<div class="cart">
+    <div class="page-title title-buttons">
+        <h1><?php echo $this->__('My Shopping Cart') ?></h1>
+        <?php if(!$this->hasError()): ?>
+            <ul class="checkout-types">
+                <?php foreach ($this->getMethods('top_methods') as $method): ?>
+                    <?php if ($methodHtml = $this->getMethodHtml($method)): ?>
+                        <li><?php echo $methodHtml; ?></li>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </ul>
+        <?php endif; ?>
+    </div>
+    <?php echo $this->getMessagesBlock()->getGroupedHtml() ?>
+    <div class="row">
+        <div class="col-sm-12 col-md-8 col-lg-9">
+		
+		<!--left info part -->
+			<div class="col-sm-12 col-md-3 col-lg-2" style="padding-left:0px;padding-right:0px;">
+				
+				<div class="module-group">      
+        <div class="info-group">
+            <div class="ribbon">
+                <div class="title">
+					<span>
+					  <i class="fa fa-dollar fa-2x"></i>
+					</span>
+                    <div style="padding-left:5px;padding-top:5px;">Price Match Gaurantee</div>
+                </div>
+                <div class="fold"></div>
+            </div>
+            StallionTek strives to offer consumers the lowest price for the goods it offers for sale. If a competitor advertises a lower price, StallionTek will 
+			refund the difference using our <a href="https://www.stalliontek.com/price-match" target="_blank">Price Match Policy.</a>
+        </div>
+        <div class="info-group">
+            <div class="ribbon">
+                <div class="title">
+                    <span>
+					  <i class="fa fa-lock fa-2x"></i>
+					 
+					</span>
+                    <div style="padding-left:5px;padding-top:5px;">Privacy Policy</div>
+                </div>
+                <div class="fold"></div>
+            </div>
+            Our <a href="https://www.stalliontek.com/privacy-policy" target="_blank">Privacy Policy</a> states that we will only share your personal information with third parties working on our behalf to complete your order such as shipping and other services.
+        </div>
+        <div class="info-group">
+            <div class="ribbon">
+                <div class="title">
+                    <span>
+						<i class="fa fa-truck fa-2x"></i> 
+                    </span>
+                    <div style="padding-left:5px;padding-top:5px;">Same Day Free Shipping</div>
+                </div>
+                <div class="fold"></div>
+            </div>
+            All orders include free shipping. Orders that follow our <a href="https://www.stalliontek.com/shipping" target="_blank">Same Day Shipping Policy</a> are eligible to be shipped on the same date of any order placed before 3 PM EST.
+        </div>
+    </div> <!--end of module-group -->
+				<div style="padding-left:10px; font-size: 14px; font-weight:bold; color:#000;">Need help placing an order?</div>
+				<br>
+				<button class="button" style="padding-left:10px;" title="Click to Chat" onclick="if ($zoho) {
+                  var $zs = $zoho.salesiq || $zoho.livedesk;
+                  $zs.floatwindow.visible('show');
+                  $zs.visitor.question(&quot; Question about shooping cart: &quot;);
+                  $zs.chat.start();
+                 }
+                 return false;">
+				  <span><span>Chat now for help</span></span>
+				</button>
+				<br><br>
+				<div style="padding-left:10px; font-size: 14px; font-weight:bold; color:#000;">Or Call us toll-free at</div>
+				<div style="padding-left:10px; font-size: 14px; font-weight:bold; color:#000;">1-844-760-5565</div>
+			</div>
+		<!--end of left info part-->	
+			<div class="col-sm-12 col-md-9 col-lg-10">
+            <div class="cart-table-wrap">
+                <?php echo $this->getChildHtml('form_before') ?>
+                <form action="<?php echo $this->getUrl('checkout/cart/updatePost') ?>" method="post">
+                    <?php echo $this->getBlockHtml('formkey'); ?>
+                    <fieldset>
+                        <table id="shopping-cart-table" class="data-table cart-table">
+                            <?php $mergedCells = ($this->helper('tax')->displayCartBothPrices() ? 2 : 1); ?>
+                            <thead>
+                            <tr>
+                                <th rowspan="<?php echo $mergedCells; ?>">&nbsp;</th>
+                                <th rowspan="<?php echo $mergedCells; ?>">&nbsp;</th>
+                                <th rowspan="<?php echo $mergedCells; ?>"><span class="nobr"><?php echo $this->__('Product Name') ?></span></th>
+                                <?php if ($this->helper('wishlist')->isAllowInCart()) : ?>
+                                    <th rowspan="<?php echo $mergedCells; ?>"><span class="nobr"><?php echo $this->__('Move to Wishlist') ?></span></th>
+                                <?php endif ?>
+                                <th colspan="<?php echo $mergedCells; ?>"><span class="nobr"><?php echo $this->__('Unit Price') ?></span></th>
+                                <th rowspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Qty') ?></th>
+                                <th class="last" colspan="<?php echo $mergedCells; ?>"><?php echo $this->__('Subtotal') ?></th>
+                            </tr>
+                            <?php if ($this->helper('tax')->displayCartBothPrices()): ?>
+                                <tr>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                    <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                    <th class="a-right"><?php echo $this->helper('tax')->getIncExcTaxLabel(false) ?></th>
+                                    <th><?php echo $this->helper('tax')->getIncExcTaxLabel(true) ?></th>
+                                </tr>
+                            <?php endif; ?>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <td colspan="50" class="a-right">
+                                    <?php if($this->getContinueShoppingUrl()): ?>
+                                        <button type="button" title="<?php echo $this->__('Continue Shopping') ?>" class="button btn-continue" onclick="setLocation('<?php echo $this->getUrl('') ?>')"><span><span><?php echo $this->__('Continue Shopping') ?></span></span></button>
+                                    <?php endif; ?>
+                                    <button type="submit" name="update_cart_action" id="update_qty" value="update_qty" title="<?php echo $this->__('Update Shopping Cart'); ?>" class="button btn-update"><span><span><?php echo $this->__('Update Shopping Cart'); ?></span></span></button>
+                                    <button type="submit" name="update_cart_action" value="empty_cart" title="<?php echo $this->__('Clear Shopping Cart'); ?>" class="button btn-empty" id="empty_cart_button"><span><span><?php echo $this->__('Clear Shopping Cart'); ?></span></span></button>
+                                    <!--[if lt IE 8]>
+                                    <input type="hidden" id="update_cart_action_container" />
+                                    <script type="text/javascript">
+                                        //<![CDATA[
+                                        Event.observe(window, 'load', function()
+                                        {
+                                            // Internet Explorer (lt 8) does not support value attribute in button elements
+                                            $emptyCartButton = $('empty_cart_button');
+                                            $cartActionContainer = $('update_cart_action_container');
+                                            if ($emptyCartButton && $cartActionContainer) {
+                                                Event.observe($emptyCartButton, 'click', function()
+                                                {
+                                                    $emptyCartButton.setAttribute('name', 'update_cart_action_temp');
+                                                    $cartActionContainer.setAttribute('name', 'update_cart_action');
+                                                    $cartActionContainer.setValue('empty_cart');
+                                                });
+                                            }
+
+                                        });
+                                    //]]>
+                                    </script>
+                                    <![endif]-->
+                                </td>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <?php foreach($this->getItems() as $_item): ?>
+                                <?php echo $this->getItemHtml($_item) ?>
+                            <?php endforeach ?>
+                            </tbody>
+                        </table>
+	<!--real time price update @lin 02170517 -->					
+<script type="text/javascript">
+		jQuery(function($){
+		
+$('.qty-holder .qty').bind('input', function() {
+	var unitPrice = parseFloat($(this).parent().parent().prev().find("span span").html().substring(1));
+	var qty = parseFloat($(this).val());
+    $(this).parent().parent().next().find("span span").html('$'+qty*unitPrice);
+	$("#update_qty").click();	
+});		
+
+})
+</script>
+<!--end of real time price update @lin 02170517 -->	
+
+                        <script type="text/javascript">decorateTable('shopping-cart-table')</script>
+                        <script type="text/javascript">
+                            //<![CDATA[
+                            jQuery(function($){
+                                $(".cart .discount h2,.cart .shipping h2").click(function(){
+                                    if ($(this).hasClass('opened')) {
+                                        $(this).removeClass('opened');
+                                        $(this).next().slideUp();
+                                    } else {
+                                        $(this).addClass('opened');
+                                        $(this).next().slideDown();
+                                    }
+                                });
+                            })
+                            //]]>
+                        </script>
+                    </fieldset>
+                </form>
+            </div>
+			</div>
+			
+		</div>
+        <div class="col-sm-12 col-md-4 col-lg-3">
+            <div class="cart-collaterals">
+<!-- get coupon function @lin 20171003-->
+	<form action="https://www.stalliontek.com/newsletter/subscriber/new/" method="post" id="home-sidebar-newsletter-validate-detail" onsubmit="setNewsletterCookie()">
+    <div class="discount">
+        <h2 class="opened">Free Coupon Code</h2>
+        <div class="discount-form" style="display:block;">
+            <div class="input-box">
+                <label for="coupon_code">Enter email to get Coupon right now.</label>
+                <input type="text" name="email" id="newsletter" title="Sign up for our newsletter" class="input-text required-entry validate-email" placeholder="Email Address">
+            </div>
+            <div class="buttons-set">
+				<button type="submit" title="Go!" class="button"><span><span>Get Coupon</span></span></button>
+            </div>
+        </div>
+    </div>
+	</form>
+
+	<a href="#popup" id="popup-open" style="display:none;"></a>
+
+	<div id="popup" style="display:none; width:350px;max-width:100%">	
+		<div class="col-sm-12">	
+			<p>Thank you!</p>
+			<p>Your Coupon code is: <span><b>ride10</b></span></p>
+			<p>code expires 11/1/2017</p>
+		</div>						
+	</div>
+	<script type="text/javascript">
+		jQuery(function($) {
+			var	msg = $(".messages .success-msg ul li span").html();	
+			if (msg.includes('Thank you for your subscription')) {						
+						jQuery.fancybox.open(jQuery('#popup-open'));	
+			}		
+		});
+	</script>
+<!-- end of get coupon function @lin 20171003-->
+			
+			
+                <?php /* Extensions placeholder */ ?>
+                <?php echo $this->getChildHtml('checkout.cart.extra') ?>
+                <?php echo $this->getChildHtml('coupon') ?>
+                <?php if (!$this->getIsVirtual()): echo $this->getChildHtml('shipping'); endif; ?>
+                <div class="totals">
+                    <h2><?php echo $this->__('Cart Totals') ?></h2>
+                    <div>
+                        <?php echo $this->getChildHtml('totals'); ?>
+                        <?php if(!$this->hasError()): ?>
+						
+						<!--form added for quote function @lin 20171003 -->
+							<form method="post" name="quoteForm" action="https://www.stalliontek.com/stallion-rfq">
+								<input type="hidden" name="myTable" id="myTable" value=''>
+								
+								<button type="button" title="Request for Quote" class="button btn-proceed-checkout btn-checkout" onclick="quoteForm.submit()" value="Request for Quote">
+									<span><span>Request for Quote</span></span>
+								</button>
+							</form>
+						<!--end of quote function @lin 20171003 -->
+
+                            <ul class="checkout-types">
+                                <?php foreach ($this->getMethods('methods') as $method): ?>
+                                    <?php if ($methodHtml = $this->getMethodHtml($method)): ?>
+                                        <li><?php echo $methodHtml; ?></li>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </ul>
+							
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+			
+<!-- badges @added by lin 20170515-->
+<div class="row" style="line-height:111px; text-align:center;">
+<div class="col-sm-12">
+	<div class="AuthorizeNetSeal" style="display:inline-block;"> 
+		<script type="text/javascript" language="javascript">var ANS_customer_id="64ba0f32-4861-4b82-b506-f33c5e204452";</script> 
+		<script type="text/javascript" language="javascript" src="//verify.authorize.net/anetseal/seal.js" ></script> 
+		<a href="http://www.authorize.net/" id="AuthorizeNetText" target="_blank">Online Payment Solution</a> 
+	</div>
+	<div style="display:inline-block;">
+		<span id="siteseal">
+			<script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=SrX3aslPyK6v8cbTZDKNs1QzlLg84a0MdtOXvfAf3GGQUiN28v9wQ5JsaPFo"></script>
+		</span>
+	</div>
+	<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
+</div>
+</div>
+<!-- end of badges -->
+			
+        </div>
+    </div>
+    <?php echo $this->getChildHtml('crosssell') ?>
+</div>
+
+<style>
+.info-group {
+    background: #F5F5F5;
+    padding: 8px 20px 20px 20px;
+    font-size: 10px;
+    color: #777;
+	border-radius:5px;
+}
+.info-group .ribbon {
+    margin: 0 -20px 0 -30px;
+}
+.info-group .ribbon .title {
+    background: #EF6B00;
+    color: #FFFFFF;
+    padding: 7px 5px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 12px;
+	display:flex;
+	border-radius:5px;
+	margin-bottom:10px;
+}
+.info-group .ribbon .fold {
+    width: 0;
+    height: 0;
+    border-top: 0;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #8e979f;
+	display:none;
+}
+.module-group {
+    margin-bottom: 10px;
+    padding-left: 10px;
+}
+.main-container .main.container {
+	padding: 0 10% 0 10%;
+}
+.onepage-cat.category-list + .main.container{
+	padding: 0 10% 0 10%;
+}
+</style>
+
+<!--added for quote function @lin 20171003 -->
+<table id="quoteTable" style="width:600px; margin:auto; display:none;">
+	<tr style="border:1px solid #eaeaea"><td>
+		<img src="https://www.stalliontek.com/media/quote_email_logo.png">
+	</td></tr>
+	<tr>
+		<td>
+		<table id="productTable" style="width:600px; margin:auto; font-family:Verdana,Arial; border:1px solid #eaeaea;">
+			<thead style="color:#333;text-decoration:none">
+				<tr style="color:#333;text-decoration:none">
+					<th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;font-family:Verdana,Arial;font-weight:400;color:#333;text-decoration:none">Item</th>
+					<th align="left" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;font-family:Verdana,Arial;font-weight:400;color:#333;text-decoration:none">Name</th>      
+					<th align="right" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;font-family:Verdana,Arial;font-weight:400;color:#333;text-decoration:none">Price</th>
+					<th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;font-family:Verdana,Arial;font-weight:400;color:#333;text-decoration:none">Qty</th>	
+					<th align="center" bgcolor="#EAEAEA" style="font-size:13px;padding:3px 9px;font-family:Verdana,Arial;font-weight:400;color:#333;text-decoration:none">Subtotal</th>       
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+		</td>
+	</tr>
+	<tr style="background-color:#eff8ff;">
+		<td style="text-align:right;float:right; padding:5px 10px;">
+			<table id="totalsTable"></table>
+		</td>
+	</tr>
+</table>						
+<script type="text/javascript">
+ jQuery(function($) {
+	var productContent=$('#shopping-cart-table tbody').html();
+	$("#productTable tbody").html(productContent);	
+	$('#productTable .action-td').remove();	
+	$('#productTable .qty-holder a').remove();
+	$('#productTable .qty-holder input').replaceWith(function(){
+        return $("<span>" + $(this).val() + "</span>");
+    });
+	
+	$('#productTable .pr-img-td a').removeAttr('href');
+	
+	$("#productTable .product-name a").replaceWith(function(){
+        return $("<span>" + $(this).html() + "</span>");
+    });
+	
+	$("#productTable td").css({"vertical-align": "top"});
+	$("#productTable .qty-holder").css({"text-align": "center"});
+	$("#productTable tr.even").css({"background-color": "#faf8f9"});
+	$("#productTable .product-name").css({"font-size": "14px", "color": "#333333"});
+	$("#productTable .item-options").css({"font-size": "13px", "line-height": "1.5"});
+	$("#productTable .item-options dt").css({"font-weight": "bold", "font-style": "italic","color":"#777"});
+	
+	var totalsContent=$('#shopping-cart-totals-table').html();
+	$("#totalsTable").html(totalsContent);	
+	
+	var quoteTable= $('#quoteTable').html();
+	$("#myTable").val(quoteTable);
+});
+</script>
+<!--end of quote function @lin 20171003 -->
