@@ -1,0 +1,270 @@
+<ul class="nav nav-tabs">
+  <li class="active"><a id="tab1" data-toggle="tab" href="#menu1" style="display:block;"><div class="tabTitle">Who We Are</div></a></li>
+  <li ><a id="tab2" data-toggle="tab" href="#menu2" style="display:block;"><div class="tabTitle">Warranty and Return Policy</div></a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="menu1" class="tab-pane fade in active">
+    <div id="about-form">
+		<div class="col2-set">
+
+		<div class="col-1">
+		<p>
+		StallionTek has been the leader in refurbished servers, networking equipment, and IT services for over 25 years. We are committed to earning your trust and becoming your primary source for any IT needs. We are tirelessly achieving these goals by offering amazing customer service, rapid delivery, and quality inspections of every part in our warehouse.
+		</p>
+
+		<p>
+		With a team that always wants what is best for the customer, and with a fully operational headquarters we earn the loyalty of both e-shoppers and distributors alike. We offer customers our time for any questions they may have related to teknology and we give them our full support to help them make any decision. Once they made that decision we professionally package and ship all products directly to the location of your choosing.
+		</p>
+
+		<p>
+		At StallionTek, we believe service truly begins after the product you ordered arrives at your doorstep. We follow through on this commitment with exceptional customer service. Our team of service associates are available via phone, e-mail and online chat to help ensure your utmost satisfaction. 
+		</p>
+
+		<p>
+		We've dedicated ourselves to making sure that everyone enjoys shopping at StallionTek. We take great pride in working passionately to exceed your expectations each and every time you shop with us.
+		</p>
+
+		</div>
+
+		<div class="col-2">			
+			<!-- added for photos @lin 20171017-->
+			<div class="col-sm-8">
+				<div class="row">
+                        <div class="col-lg-6 col-md-2 col-sm-4 col-xs-4 trainerBox">
+                            <figure><a href="https://www.stalliontek.com/media/about1.jpg"><img src="https://www.stalliontek.com/media/about1_s.jpg" alt=""></a></figure>
+                        </div>
+                        <div class="col-lg-6 col-md-2 col-sm-4 col-xs-4 trainerBox">
+                            <figure><a href="https://www.stalliontek.com/media/about2.jpg"><img src="https://www.stalliontek.com/media/about2_s.jpg" alt=""></a></figure>
+                        </div>
+                        <div class="col-lg-6 col-md-2 col-sm-4 col-xs-4 trainerBox">
+                            <figure><a href="https://www.stalliontek.com/media/about3.jpg"><img src="https://www.stalliontek.com/media/about3_s.jpg" alt=""></a></figure>
+                        </div>
+                </div>		
+			</div>
+<script type="text/javascript">
+ jQuery(function($){
+	
+	// Get the image and insert it inside the modal
+	$(".trainerBox figure a").click(function(){
+		var imgSrc = $(this).attr('href');		
+		$("#modalImg").attr("src", imgSrc);
+		$("#myModal").css("display", "block");
+		return false;
+	});
+	
+	$(".close").click(function(){
+		$("#myModal").css("display", "none");
+	});
+	
+	//close modal when click, except click on img.
+	$("#myModal").on('click', function (e){
+		if (!$(e.target).hasClass('modalImg')) {
+			$("#myModal").css("display", "none");
+		}
+	});
+})
+</script>			
+		</div>
+
+		<div class="divider"></div>
+
+		<a href="Javascript:void(0)" onclick="javascript:window.open('https://www.stalliontek.com/iso/Stallion ISO Certificate.pdf','_blank'); return false;">
+			<img alt="StallionTek- ISO 9001-2008" height="120" src="https://www.stalliontek.com/iso/ISO_LOGO.png">
+		</a>
+
+		<a href="https://www.stalliontek.com/price-match" target="_blank">
+			<img src="https://www.stalliontek.com/media/lowprice.png" width=120px alt="price match">
+		</a>
+	
+		<a href="https://www.stalliontek.com/stallion-certified" target="_blank">
+			<img src="https://www.stalliontek.com/media/certified.png" width=120px alt="stallion certified">
+		</a>
+
+		<a href="https://www.stalliontek.com/shipping" target="_blank">
+			<img src="https://www.stalliontek.com/media/shipping200x200.png" width=120px alt="shipping">
+		</a>
+				
+		</div>
+		</div>
+  </div>
+  <div id="menu2" class="tab-pane fade">
+    <div id="about-form">
+		<div class="col2-set">
+
+		<div class="col-1">
+			<p><strong>Warranty:</strong></p>
+			<p>
+			We confidently back our systems with a 2-Year warranty on the chassis and all internal components. You may extend your warranty within the servers customizable options before adding to cart.
+			</p>
+			<p><strong>Return Policy</strong></p>
+			<p >
+			You may return any new server or component purchased from StallionTek that is "dead on arrival," arrives in damaged condition, for a full refund within 30 days of purchase. StallionTek reserves the right to test "dead on arrival" returns and impose a customer fee equal to 20 percent of the product sales price if the customer misrepresents the condition of the product.
+			</p>
+
+			<p>
+			Any returned server or component that is damaged through customer misuse, is missing parts, or is in unsellable condition due to customer tampering will result in the customer being charged a higher restocking fee based on the condition of the product. StallionTek will not accept returns of any desktop or notebook computer more than 30 days after you receive the shipment. 
+			</p>
+		</div>
+
+		<div class="col-2">
+			<div class="col-sm-12">				
+					<img src="https://www.stalliontek.com/media/warranty2year.png" width=150px alt="warranty">
+			</div>
+		</div>
+
+		<div class="divider"></div>
+
+		</div>
+	</div>
+
+  </div>
+</div>
+
+<!-- The Modal to show bigger image-->
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <div class="modal-content">
+	<img class="modalImg" id="modalImg" width=100%>
+  </div>
+  <!--<div id="caption"></div>-->
+</div>
+
+<style>
+.trainerBox {
+    margin-bottom: 38px;
+    position: relative;
+    display: block;
+}
+.trainerBox figure{
+	margin:0;
+	border-radius:50%;
+	overflow:hidden;
+	display:block;
+}
+.trainerBox figure a {
+    position: relative;
+    display: block;
+    width: 100%;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.trainerBox figure a:hover{
+	opacity:0.7;
+    filter: alpha(opacity=70);
+}
+.trainerBox figure a:hover img{
+	-webkit-transform: rotate(-5deg);
+	transform: rotate(-5deg);
+}
+.trainerBox figure img {
+    width: 100%;
+    top: 0;
+    left: 0;
+    -webkit-transition: all 0.35s ease;
+    -o-transition: all 0.35s ease;
+    transition: all 0.35s ease;
+    outline: 1px solid transparent;
+}
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 9999; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 802px;
+}
+
+/* Caption of Modal Image */
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 800px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {    
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+    from {-webkit-transform:scale(0)} 
+    to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+    from {transform:scale(0)} 
+    to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+	opacity:0.9;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+    .modal-content {
+        width: 100%;
+    }
+}
+</style>
+<script type="text/javascript">
+jQuery(function($){
+/*solve tab disappear problem */
+	 $(document).off('click.tab.data-api');
+		$(document).on('click.tab.data-api', '[data-toggle="tab"]', function (e) {
+			e.preventDefault();
+			var tab = $($(this).attr('href'));
+			var activate = !tab.hasClass('active');
+			$('div.tab-content>div.tab-pane.active').removeClass('active');
+			$('ul.nav.nav-tabs>li.active').removeClass('active');
+			if (activate) {
+				$(this).tab('show')
+			}
+		});	
+/* trigger tab from other pages*/
+	var hash = location.hash;
+	if(hash=="#warr"){ 
+		$("#tab2").trigger("click");
+	}
+
+})
+</script>
